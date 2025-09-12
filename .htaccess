@@ -1,0 +1,51 @@
+# .htaccess
+# ZPanel security and link rewriter module
+# Revision 1 [9-12-2025]
+# Zee ^_~
+
+# Disable directory listing
+Options -Indexes
+Options +FollowSymLinks
+
+# Default index
+DirectoryIndex index.php
+
+# Deny access to sensitive files
+<FilesMatch "^(config\.php|init\.php|functions\.php|composer\.json|composer\.lock)$">
+    Require all denied
+</FilesMatch>
+
+# Block direct access to /lib
+RewriteRule ^lib/ - [F,L]
+
+# Block dangerous file types inside /themes
+RewriteRule ^themes/.*\.(php|ini|sql|sh|bak|swp)$ - [F,L]
+
+# Security headers
+<IfModule mod_headers.c>
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# ---------------------------------------------------------------
+# Rewrite rules
+# ---------------------------------------------------------------
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+	# change this to your root_path (include slash both ends)
+    RewriteBase /cp/
+
+    # Allow direct access to static assets (css, js, images, fonts)
+    RewriteCond %{REQUEST_URI} \.(css|js|jpg|jpeg|png|gif|svg|ico|woff|woff2|ttf|eot)$ [NC] 
+	RewriteRule ^ - [L]
+	# If only /root_path/ is requested, route it to index.php
+	RewriteRule ^$ index.php [L]
+	
+	# Redirect all other requests to index.php (front controller)
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteCond %{REQUEST_FILENAME} !-d
+	RewriteRule ^ index.php [QSA,L]
+</IfModule>
+	
