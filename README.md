@@ -39,10 +39,14 @@ How To ... ?
 - (IMPORTANT) Modify the .htaccess file (in Rewrite Rules > RewriteBase ) following the value in config.php > root_path
 - Import sql tables to your main database (sql-files)
 
-To-do
+What's next?
 ---------
-- Create a comprehensive documentation for installation and custom theme creation guides.
-- Release version 1.5 in 2 weeks (list of additional features in the next version will be posted here).
+* Version 1.5 is in the works and will be released on 09-26-2025.
+Features include:
+- characters sorting
+- enhancements with the server side login session handling
+- reset look
+- cross-emulator compatibility implementation
 
 Credits
 ---------
