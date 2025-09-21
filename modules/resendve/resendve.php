@@ -86,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if ($sent) {
 					//Detailed confirmation for debugging.
                     //$success = 'A verification email has been sent to <strong>' . e($account['email']) . '</strong>.';
-					$success = 'Verification email has been re-sent.';
+					$success = 'Verification email has been re-sent. Please make sure to check your spam/junk mail.';
                 } else {
                     $error = 'Failed to send verification email. Please contact the administrator.';
                 }
