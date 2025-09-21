@@ -2,16 +2,16 @@
 /**
  * lib/mailer.php
  * ZPanel PHPMailer wrapper
- * Revision 1 [9-12-2025]
+ * Revision 2 [9-21-2025]
  * Zee ^_~
  */
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
 // Include PHPMailer libraries
-require_once __DIR__ . '/phpmailer/src/Exception.php';
-require_once __DIR__ . '/phpmailer/src/PHPMailer.php';
-require_once __DIR__ . '/phpmailer/src/SMTP.php';
+require_once __DIR__ . '/phpmailer/Exception.php';
+require_once __DIR__ . '/phpmailer/PHPMailer.php';
+require_once __DIR__ . '/phpmailer/SMTP.php';
 
 /**
  * Initialize PHPMailer
