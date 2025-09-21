@@ -2,7 +2,7 @@
 /**
  * modules/register/register.php
  * ZPanel register module
- * Revision 1 [9-12-2025]
+ * Revision 2 [9-21-2025]
  * Zee ^_~
  */
 require_once __DIR__ . '/../../init.php';           // loads $config, session, functions (db helpers), etc.
@@ -92,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Determine whether registration requires verification
         $requiresVerification = false;
-        if (isset($config['registration']['require_email_verification'])) {
+        if (isset($config['registration']['email_verification'])) {
             $requiresVerification = (bool)$config['registration']['email_verification'];
         }
 
@@ -119,7 +119,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Send verification email if needed
             if ($requiresVerification) {
                 // Build activation link (direct to modules/register/verify.php)
-                $activationLink = rtrim($config['site']['url'], '/') . '/modules/register/verify.php'. '?user=' . urlencode($username) . '&code=' . urlencode($activationCode);
+                $activationLink = rtrim($config['site']['url'], '/') 
+				. $config['site']['root_path']
+				. '/modules/register/verify.php'
+				. '?user=' . urlencode($username) 
+				. '&code=' . urlencode($activationCode);
 
                 // Build email body using template function
                 $subject = $config['mail']['verification_email'] ?? 'Activate your account';
