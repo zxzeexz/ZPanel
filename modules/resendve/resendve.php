@@ -2,7 +2,7 @@
 /**
  * modules/resendve/resendve.php
  * ZPanel Resend verification email module
- * Revision 1 [9-12-2025]
+ * Revision 2 [9-21-2025]
  * Zee ^_~
  */
 require_once __DIR__ . '/../../init.php';
@@ -73,8 +73,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 				$error = 'No pending verification found under this username or email.';
             } else {
                 // Build activation link that points to the register verification script
-                $siteUrl = rtrim($config['site']['url'] ?? BASE_URL, '/');
-                $activationLink = $siteUrl . '/modules/register/verify.php?code=' . urlencode($account['activation_code']);
+                $siteUrl = $config['site']['url'] ?? BASE_URL;
+				$rootPath = $config['site']['root_path'];
+                $activationLink = $siteUrl . $rootPath . '/modules/register/verify.php?user=' . urlencode($account['username']) . '&code=' . urlencode($account['activation_code']);
 
                 $subject = $config['mail']['verification_email'] ?? 'Activate your account';
                 $body = getVerifyEmailTemplate($account['username'], $activationLink, $config);
