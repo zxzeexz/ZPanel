@@ -82,6 +82,9 @@ if (isset($config['registration']['email_verification'])) {
                     <?php if ($error): ?>
                         <div class="alert alert-danger"><?= e($error) ?></div>
                     <?php endif; ?>
+					<?php if ($_GET['logout'] && $_GET['logout'] == 1): ?>
+						<div class="alert alert-danger"><?= e($config['msg'][''login_loggedout'']) ?></div>
+					<?php endif; ?>
                     <form method="post" action="">
                         <!-- CSRF token (procedural) -->
                         <?= csrf_field() ?>
