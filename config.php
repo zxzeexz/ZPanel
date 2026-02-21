@@ -5,7 +5,7 @@
  * Revision 1 [9-12-2025]
  * Zee ^_~
  */
-$siteUrl = 'http://localhost';					//Specify [protocol (http or https)]://[hostname]:[port] under where ZPanel runs.
+$siteUrl = 'http://47.129.100.170';					//Specify [protocol (http or https)]://[hostname]:[port] under where ZPanel runs.
 return [
     // -----------------------------
     // Site Settings
@@ -13,12 +13,12 @@ return [
     'site' => [
         'name'       => 'ZPanel',					//Page title accross entire site
         'url'        => $siteUrl,					//Recommended not to touch this (unless you know what youre doing.)
-        'root_path'  => '/cp',						//Base web root on which your application lies
+        'root_path'  => '/cpanel',						//Base web root on which your application lies
     ],
     // -----------------------------
     // Debug Mode
     // -----------------------------
-    'debug' => false,								//Toggle error reporting
+    'debug' => true,								//Toggle error reporting
 
     // -----------------------------
     // Database Settings - supports only MySQL/MariaDB.
@@ -26,9 +26,9 @@ return [
     'db' => [
         'host'     => 'localhost',
         'port'     => '3306',
-        'name'     => 'zro_main',
+        'name'     => 'c2ro_main',
         'user'     => 'root',
-        'pass'     => '123456',
+        'pass'     => '837829318',
         'charset'  => 'utf8mb4',
     ],
 
@@ -81,4 +81,15 @@ return [
 		'x'       => 150,
 		'y'       => 150,
 	],
+
+	//messages
+	'msg' => [
+		//login module
+		//errors
+		'login_csrferror' => 'CSRF validation failed. Please reload the page and try again.',
+		'login_nullusrpw' => 'Please enter both username and password.',
+		'login_wrongpass' => 'Invalid password.',
+		'login_noaccount' => 'Account not found.',
+	],
+
 ];

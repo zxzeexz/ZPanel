@@ -18,13 +18,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // CSRF: use procedural helper loaded by init.php
     $token = $_POST['csrf_token'] ?? '';
     if (!csrf_verify($token)) {
-        $error = "CSRF validation failed. Please reload the page and try again.";
+        $error = $config['msg']['login_csrferror'];
     } else {
         $username = trim($_POST['username'] ?? '');
         $password = $_POST['password'] ?? '';
 
         if ($username === '' || $password === '') {
-            $error = "Please enter both username and password.";
+            $error = $config['msg']['login_nullusrpw'];
         } else {
             // Fetch account from `login` table
             $sql = "SELECT account_id, userid, user_pass FROM `login` WHERE userid = :u LIMIT 1";
@@ -57,10 +57,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     redirect($redirectTo);
                 } else {
-                    $error = "Invalid password.";
+                    $error = $config['msg']['login_wrongpass'];
                 }
             } else {
-                $error = "Account not found.";
+                $error = $config['msg']['login_noaccount'];
             }
         }
     }

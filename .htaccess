@@ -35,7 +35,7 @@ RewriteRule ^themes/.*\.(php|ini|sql|sh|bak|swp)$ - [F,L]
 <IfModule mod_rewrite.c>
     RewriteEngine On
 	# change this to your root_path (include slash both ends)
-    RewriteBase /cp/
+    RewriteBase /cpanel/
 
     # Allow direct access to static assets (css, js, images, fonts)
     RewriteCond %{REQUEST_URI} \.(css|js|jpg|jpeg|png|gif|svg|ico|woff|woff2|ttf|eot)$ [NC] 
