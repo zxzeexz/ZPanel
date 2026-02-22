@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // CSRF: use procedural helper loaded by init.php
     $token = $_POST['csrf_token'] ?? '';
     if (!csrf_verify($token)) {
-        $error = $config['msg']['login_csrferror'];
+        $error = $config['msg']['form_csrferror'];
     } else {
         $username = trim($_POST['username'] ?? '');
         $password = $_POST['password'] ?? '';
@@ -83,7 +83,7 @@ if (isset($config['registration']['email_verification'])) {
                         <div class="alert alert-danger"><?= e($error) ?></div>
                     <?php endif; ?>
 					<?php if ($_GET['logout'] && $_GET['logout'] == 1): ?>
-						<div class="alert alert-danger"><?= e($config['msg']['login_loggedout']) ?></div>
+						<div class="alert alert-primary"><?= e($config['msg']['login_loggedout']) ?></div>
 					<?php endif; ?>
                     <form method="post" action="">
                         <!-- CSRF token (procedural) -->

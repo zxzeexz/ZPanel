@@ -84,14 +84,24 @@ return [
 
 	//messages
 	'msg' => [
+		//misc
+		'form_csrferror' => 'CSRF validation failed. Please reload the page and try again.',
 		//login module
 		//errors
-		'login_csrferror' => 'CSRF validation failed. Please reload the page and try again.',
 		'login_nullusrpw' => 'Please enter both username and password.',
 		'login_wrongpass' => 'Invalid password.',
 		'login_noaccount' => 'Account not found.',
 		//confirmations
 		'login_loggedout' => 'Logged out successfully.',
+		//charview module
+		//errors
+		'chview_invchid' => 'Invalid character ID.',
+		'chview_xauthid' => 'Error accessing this page.',
+		//unstuck
+		'chview_unotfnd' => 'Character not found.',
+		'chview_unisonl' => 'Character is online. Please logout first and try again.',
+		'chview_unsucce' => 'Character unstuck successfully!',
+		'chview_unerror' => 'Failed to update character.',
 	],
 
 ];

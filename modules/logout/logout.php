@@ -8,4 +8,4 @@
 require_once __DIR__ . '/../../init.php';
 
 Session::destroy();
-redirect(BASE_URL . 'login');
+redirect(BASE_URL . 'login?logout=1');

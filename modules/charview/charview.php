@@ -26,7 +26,7 @@ $unstuckConfig = $config['unstuck'] ?? [
 ];
 
 if ($charId <= 0) {
-    echo '<div class="alert alert-danger">Invalid character ID.</div>';
+    echo '<div class="alert alert-danger">'.$config['msg']['chview_invchid'].'</div>';
     exit;
 }
 
@@ -45,7 +45,7 @@ $char = db_fetch(
 );
 
 if (!$char) {
-    echo '<div class="alert alert-danger">Error accessing this page.</div>';
+    echo '<div class="alert alert-danger">'.$config['msg']['chview_xauthid'].'</div>';
     exit;
 }
 
@@ -53,7 +53,7 @@ if (!$char) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['unstuck_char_id'])) {
     $token = $_POST['csrf_token'] ?? '';
     if (!csrf_verify($token)) {
-        echo '<div class="alert alert-danger">CSRF validation failed. Please reload and try again.</div>';
+        echo '<div class="alert alert-danger">'.$config['msg']['form_csrferror'].'</div>';
     } else {
         $unstuckCharId = (int) $_POST['unstuck_char_id'];
 
@@ -64,9 +64,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['unstuck_char_id'])) {
         );
 
         if (!$c) {
-            echo '<div class="alert alert-danger">Character not found.</div>';
+            echo '<div class="alert alert-danger">'.$config['msg']['chview_unotfnd'].'</div>';
         } elseif ((int) $c['online'] === 1) {
-            echo '<div class="alert alert-danger">Character is online. Please logout first and try again.</div>';
+            echo '<div class="alert alert-danger">'.$config['msg']['chview_unisonl'].'</div>';
         } elseif ($unstuckConfig['enabled']) {
             $ok = db_execute(
                 "UPDATE `char` 
@@ -81,9 +81,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['unstuck_char_id'])) {
             );
 
             if ($ok) {
-                echo '<div class="alert alert-success">Character unstuck successfully!</div>';
+                echo '<div class="alert alert-success">'.$config['msg']['chview_unsucce'].'</div>';
             } else {
-                echo '<div class="alert alert-danger">Failed to update character.</div>';
+                echo '<div class="alert alert-danger">'.$config['msg']['chview_unerror'].'</div>';
             }
         }
     }
