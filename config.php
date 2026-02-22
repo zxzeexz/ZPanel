@@ -52,6 +52,7 @@ return [
     // -----------------------------
     'registration' => [
         'max_accounts_per_ip' => 3, 			//Set to 0 to allow unlimited account creation under same IP
+		'max_accounts_per_device' => 3, 		//New: Set to 0 to allow unlimited per device fingerprint
         'email_verification'  => false,			//Set to false to skip email verification
     ],
 

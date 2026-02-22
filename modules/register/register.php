@@ -33,6 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $sex       = strtoupper(trim((string)($_POST['sex'] ?? 'M')));
     $birthdate = trim((string)($_POST['birthdate'] ?? ''));
     $ip        = getUserIp();
+	$device_fingerprint = trim((string)($_POST['device_fingerprint'] ?? ''));
 
     // Basic validation
     if (!$error) {
@@ -76,6 +77,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
     }
+	
+	// Enforce max accounts per device (if configured)
+	if (!$error) {
+        $limit = (int)($config['registration']['max_accounts_per_device'] ?? 0);
+        if ($limit > 0 && $device_fingerprint !== '') {  // Skip if fingerprint missing
+            $row = db_fetch("SELECT COUNT(*) AS cnt FROM cp_accounts WHERE device_fingerprint = :fp", [':fp' => $device_fingerprint]);
+            $count = (int)($row['cnt'] ?? 0);
+            if ($count >= $limit) {
+                $error = "Maximum number of accounts reached for this device.";
+            }
+        }
+    }
 
     // Insert account
     if (!$error) {
@@ -101,8 +114,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Insert prepared
         $sql = "INSERT INTO cp_accounts
-                (username, email, password, sex, birthdate, reg_ip, verified, activation_code, created_at)
-                VALUES (:username, :email, :password, :sex, :birthdate, :reg_ip, :verified, :activation_code, NOW())";
+                (username, email, password, sex, birthdate, reg_ip, verified, activation_code, created_at, device_fingerprint)
+                VALUES (:username, :email, :password, :sex, :birthdate, :reg_ip, :verified, :activation_code, NOW(), :device_fingerprint)";
 
         $ok = db_execute($sql, [
             ':username'        => $username,
@@ -113,6 +126,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ':reg_ip'          => $ip,
             ':verified'        => $verified,
             ':activation_code' => $activationCode,
+			':device_fingerprint' => $device_fingerprint,
         ]);
 
         if ($ok) {
@@ -174,7 +188,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php if (!empty($config['security']['csrf_protection'])): ?>
         <?= csrf_field() ?>
     <?php endif; ?>
-
+			<input type="hidden" name="device_fingerprint" id="device_fingerprint" value="">
     <div class="row">
         <div class="col-md-6 mb-3">
             <label class="form-label">Username</label>
@@ -243,3 +257,12 @@ document.getElementById('registerForm').addEventListener('submit', function (e) 
         </div>
     </div>
 </div>
+<script src="assets/fingerprint/fp.min.js"></script>
+<script>
+    // Load FingerprintJS and set the fingerprint
+    FingerprintJS.load().then(fp => {
+        fp.get().then(result => {
+            document.getElementById('device_fingerprint').value = result.visitorId;
+        });
+    });
+</script>
