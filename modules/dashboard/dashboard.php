@@ -18,52 +18,7 @@ $accountId = Session::getAccountId();
 $username  = Session::get('username');
 
 // Load unstuck config
-$unstuckConfig = $config['unstuck'] ?? [
-    'enabled' => false,
-    'town'    => 'prontera',
-    'x'       => 150,
-    'y'       => 180,
-];
-
-// Handle Unstuck action
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['unstuck_char_id'])) {
-    $token = $_POST['csrf_token'] ?? '';
-    if (!csrf_verify($token)) {
-        echo '<div class="alert alert-danger">CSRF validation failed. Please reload and try again.</div>';
-    } else {
-        $charId = (int) $_POST['unstuck_char_id'];
-
-        // Fetch char for this account
-        $char = db_fetch(
-            "SELECT char_id, online FROM `char` WHERE char_id = :cid AND account_id = :aid LIMIT 1",
-            [':cid' => $charId, ':aid' => $accountId]
-        );
-
-        if (!$char) {
-            echo '<div class="alert alert-danger">Character not found.</div>';
-        } elseif ((int) $char['online'] === 1) {
-            echo '<div class="alert alert-danger">Character is online. Please logout first and try again.</div>';
-        } elseif ($unstuckConfig['enabled']) {
-            $ok = db_execute(
-                "UPDATE `char` 
-                 SET last_map = :map, last_x = :x, last_y = :y 
-                 WHERE char_id = :cid",
-                [
-                    ':map' => $unstuckConfig['town'],
-                    ':x'   => $unstuckConfig['x'],
-                    ':y'   => $unstuckConfig['y'],
-                    ':cid' => $charId,
-                ]
-            );
-
-            if ($ok) {
-                echo '<div class="alert alert-success">Character unstuck successfully!</div>';
-            } else {
-                echo '<div class="alert alert-danger">Failed to update character.</div>';
-            }
-        }
-    }
-}
+$unstuckConfig = $config['unstuck'];
 
 // Fetch characters
 $characters = db_fetch_all(
@@ -75,10 +30,14 @@ $characters = db_fetch_all(
 );
 ?>
 <div class="container mt-5">
+    <?php if (isset($_SESSION['flash'])): ?>
+        <div class="alert alert-<?php echo e($_SESSION['flash']['type']); ?>"><?php echo e($_SESSION['flash']['msg']); ?></div>
+        <?php unset($_SESSION['flash']); ?>
+    <?php endif; ?>
     <div class="row mb-4">
         <div class="col">
             <h2 class="mb-3">
-                Welcome, <span class="text-primary"><?= e($username ?? 'Unknown') ?></span>!
+                Welcome, <span class="text-primary"><?php echo e($username ?? 'Unknown'); ?></span>!
             </h2>
     </div>
 
@@ -86,7 +45,7 @@ $characters = db_fetch_all(
         <div class="col">
             <?php if (empty($characters)): ?>
                 <div class="alert alert-info">
-                    You donâ€™t have any characters yet.
+                    You don’t have any characters yet.
                 </div>
             <?php else: ?>
                 <div class="card shadow border-0">
@@ -116,13 +75,13 @@ $characters = db_fetch_all(
                                                     <span class="badge bg-danger">Offline</span>
                                                 <?php endif; ?>
                                             </td>
-                                            <td><?= e($char['name']) ?></td>
-                                            <td><?= e(get_job_name((int)$char['class'])) ?></td>
-                                            <td><?= e($char['base_level']) ?></td>
-                                            <td><?= e($char['job_level']) ?></td>
+                                            <td><?php echo e($char['name']); ?></td>
+                                            <td><?php echo e(get_job_name((int)$char['class'])); ?></td>
+                                            <td><?php echo e($char['base_level']); ?></td>
+                                            <td><?php echo e($char['job_level']); ?></td>
                                             <td class="text-center">
                                                 <!-- Secure: charview.php will validate account ownership -->
-                                                <a href="<?= BASE_URL ?>charview?char_id=<?= (int)$char['char_id'] ?>" 
+                                                <a href="<?php echo BASE_URL; ?>charview?char_id=<?php echo (int)$char['char_id']; ?>" 
                                                    class="btn btn-view btn-sm">
                                                     <i class="fas fa-eye"></i> View
                                                 </a>
@@ -131,12 +90,12 @@ $characters = db_fetch_all(
                                                     <button type="button" 
                                                             class="btn btn-warning btn-sm" 
                                                             data-bs-toggle="modal" 
-                                                            data-bs-target="#unstuckModal<?= $char['char_id'] ?>">
+                                                            data-bs-target="#unstuckModal<?php echo $char['char_id']; ?>">
                                                         <i class="fas fa-life-ring"></i> Unstuck
                                                     </button>
 
                                                     <!-- Modal -->
-                                                    <div class="modal fade" id="unstuckModal<?= $char['char_id'] ?>" tabindex="-1" aria-hidden="true">
+                                                    <div class="modal fade" id="unstuckModal<?php echo $char['char_id']; ?>" tabindex="-1" aria-hidden="true">
                                                       <div class="modal-dialog modal-dialog-centered">
                                                         <div class="modal-content">
                                                           <div class="modal-header">
@@ -145,14 +104,15 @@ $characters = db_fetch_all(
                                                           </div>
                                                           <div class="modal-body">
                                                             Are you sure you want to warp 
-                                                            <strong><?= e($char['name']) ?></strong> 
-                                                            to <strong><?= e($unstuckConfig['town']) ?></strong>?
+                                                            <strong><?php echo e($char['name']); ?></strong> 
+                                                            to <strong><?php echo e($unstuckConfig['town']); ?></strong>?
                                                           </div>
                                                           <div class="modal-footer">
                                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                                            <form method="post" class="d-inline">
-                                                                <input type="hidden" name="unstuck_char_id" value="<?= $char['char_id'] ?>">
-                                                                <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
+                                                            <form method="post" action="<?php echo BASE_URL; ?>action/unstuck/unstuck.php" class="d-inline">
+                                                                <input type="hidden" name="unstuck_char_id" value="<?php echo $char['char_id']; ?>">
+                                                                <input type="hidden" name="csrf_token" value="<?php echo e(csrf_token()); ?>">
+                                                                <input type="hidden" name="redirect" value="<?php echo BASE_URL; ?>dashboard">
                                                                 <button type="submit" class="btn btn-warning">
                                                                     Yes, Unstuck
                                                                 </button>

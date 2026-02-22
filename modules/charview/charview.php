@@ -129,7 +129,7 @@ if (!$char) {
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            <form method="post" action="<?= BASE_URL ?>action/unstuck" class="d-inline">
+            <form method="post" action="<?= BASE_URL ?>action/unstuck/unstuck.php" class="d-inline">
                 <input type="hidden" name="unstuck_char_id" value="<?= $char['char_id'] ?>">
                 <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
                 <input type="hidden" name="redirect" value="<?= BASE_URL ?>charview?char_id=<?= $charId ?>">

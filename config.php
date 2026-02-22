@@ -102,7 +102,7 @@ return [
 		//unstuck
 		'action_unotfnd' => 'Character not found.',
 		'action_unisonl' => 'Character is online. Please logout first and try again.',
-		'action_unsucce' => 'Character unstuck successfully!',
+		'action_unsucce' => 'Character unstuck successfull.',
 		'action_unerror' => 'Failed to update character.',
 		'action_undisab' => 'Unstuck feature is disabled.',
 	],
