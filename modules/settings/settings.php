@@ -6,7 +6,6 @@
  * Zee ^_~
  */
 require_once __DIR__ . '/../../init.php';
-require_once __DIR__ . '/../../lib/csrf.php';
 
 if (!Session::isLoggedIn()) {
     redirect(BASE_URL . 'login');
@@ -32,7 +31,7 @@ $success = $error = "";
 // Handle password change
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
     if (!csrf_verify($_POST['csrf_token'] ?? '')) {
-        $error = "Invalid CSRF token.";
+        $error = $config['msg']['form_csrferror'];
     } else {
         $currentPassword = $_POST['current_password'] ?? '';
         $newPassword     = $_POST['new_password'] ?? '';
@@ -40,9 +39,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
 
         // Basic validation
         if ($newPassword !== $confirmPassword) {
-            $error = "New passwords do not match.";
+            $error = $config['msg']['settng_inpmism'];
         } elseif (strlen($newPassword) < 6) {
-            $error = "New password must be at least 6 characters.";
+            $error = $config['msg']['settng_inpulen'];
         } else {
             $config = include __DIR__ . '/../../config.php';
             $hashMethod = $config['security']['hash_method'] ?? 'md5';
@@ -53,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
 
             // Verify current password in `login`
             if ($account['user_pass'] !== $currentHash) {
-                $error = "Current password is incorrect.";
+                $error = $config['msg']['settng_xcurpas'];
             } else {
                 $newHash = ($hashMethod === 'md5')
                     ? md5($newPassword)
@@ -71,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
                     [':pass' => $newHash, ':u' => $username]
                 );
 
-                $success = "Password updated successfully!";
+                $success = $config['msg']['settng_success'];
             }
         }
     }

@@ -45,7 +45,7 @@ $characters = db_fetch_all(
         <div class="col">
             <?php if (empty($characters)): ?>
                 <div class="alert alert-info">
-                    You don’t have any characters yet.
+                    <?php echo $config['msg']['dashbo_nochars']; ?>
                 </div>
             <?php else: ?>
                 <div class="card shadow border-0">

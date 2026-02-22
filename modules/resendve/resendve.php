@@ -16,7 +16,7 @@ if (empty($config['registration']['email_verification'])): ?>
             <div class="col-md-7">
                 <div class="alert alert-warning shadow-sm">
                     <i class="fas fa-exclamation-triangle"></i>
-                    Email verification is currently disabled. This page is not available.
+                    <?php echo $config['msg']['reseve_disable']; ?>
                 </div>
             </div>
         </div>
@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!empty($config['security']['csrf_protection'])) {
         $token = $_POST['csrf_token'] ?? '';
         if (!csrf_verify($token)) {
-            $error = 'Invalid CSRF token. Please reload the page and try again.';
+            $error = $config['msg']['form_csrferror'];
         }
     }
 
@@ -44,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (!$error) {
         if ($identifier === '') {
-            $error = 'Please enter your username or email.';
+            $error = $config['msg']['reseve_nullchk'];
         } else {
             // Find account by username or email
             $account = db_fetch(
@@ -60,17 +60,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
             if (!$account) {
-				//Real error for debugging.
                 //$error = 'No account found with that username or email.';
-				$error = 'No pending verification found under this username or email.';
+				$error = $config['msg']['reseve_noaccnt'];
             } elseif ((int)($account['verified'] ?? 0) === 1) {
-				//Real notice for debugging.
                 //$success = 'This account is already verified. You can log in.';
-				$error = 'No pending verification found under this username or email.';
+				$error = $config['msg']['reseve_nopendi'];
             } elseif (empty($account['activation_code'])) {
-				//Real notice for debugging.
                 //$error = 'No activation code on file for this account. Please contact support.';
-				$error = 'No pending verification found under this username or email.';
+				$error = $config['msg']['reseve_novcode'];
             } else {
                 // Build activation link that points to the register verification script
                 $siteUrl = $config['site']['url'] ?? BASE_URL;
@@ -84,11 +81,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $sent = sendMail($account['email'], $subject, $body);
 
                 if ($sent) {
-					//Detailed confirmation for debugging.
-                    //$success = 'A verification email has been sent to <strong>' . e($account['email']) . '</strong>.';
-					$success = 'Verification email has been re-sent. Please make sure to check your spam/junk mail.';
+					// Successful resend
+					$success = $config['msg']['reseve_success'];
                 } else {
-                    $error = 'Failed to send verification email. Please contact the administrator.';
+                    $error = $config['msg']['reseve_notsent'];
                 }
             }
         }

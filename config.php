@@ -54,6 +54,21 @@ return [
         'max_accounts_per_ip' => 3, 			//Set to 0 to allow unlimited account creation under same IP
 		'max_accounts_per_device' => 3, 		//New: Set to 0 to allow unlimited per device fingerprint
         'email_verification'  => false,			//Set to false to skip email verification
+		'allowed_email_domains' => [            // List of allowed email domains for registration
+            'gmail.com',
+            'yahoo.com',
+            'hotmail.com',
+            'outlook.com',
+            'icloud.com',
+            'protonmail.com',
+            'aol.com',
+            'yandex.com',
+            'mail.com',
+            'inbox.com',
+            'zoho.com',
+            'gmx.com',
+            // Add more as needed
+        ],
     ],
 
     // -----------------------------
@@ -98,6 +113,47 @@ return [
 		//errors
 		'chview_invchid' => 'Invalid character ID.',
 		'chview_xauthid' => 'Error accessing this page.',
+		//dashboard module
+		'dashbo_nochars' => 'You do not have any characters yet.',
+		//register module
+		//errors
+		'regist_nullfld' => 'All fields are required.',
+		'regist_verpass' => 'Passwords do not match.',
+		'regist_invasex' => 'Invalid sex selection.',
+		'regist_invemai' => 'Invalid email address.',
+		'regist_bdformt' => 'Invalid birthdate format. Use YYYY-MM-DD.',
+		'regist_xdomain' => 'Email domain not allowed. Please use a supported email provider.',
+		'regist_dupuser' => 'Username already taken.',
+		'regist_dupmail' => 'Email already registered.',
+		'regist_aclimit' => 'Maximum number of allowed registrations reached.',
+		'regist_dberror' => 'Failed to create account. Please try again later.',
+		//confirmations
+		'regist_success' => 'Account created! Please check your email for the verification link.',
+		'regist_succes2' => 'Account created successfully. You may now log in.',
+		'regist_sucxeml' => 'Account created, but failed to send verification email. Contact admin.',
+		//register module -- verification
+		'regis2_donever' => 'This account has already been verified. You may log in.',
+		'regis2_verfied' => 'Your account has been verified! You can now log in.',
+		'regis2_dberror' => 'Failed to verify account due to a server error. Please contact admin.',
+		'regis2_vrerror' => 'Verification failed. The link is invalid or the account does not exist.',
+		'regis2_badlink' => 'Invalid verification link.',
+		//resend verification link module
+		//errors
+		'reseve_disable' => 'Email verification is currently disabled. This page is not available.',
+		'reseve_nullchk' => 'Please enter your username or email.',
+		'reseve_noaccnt' => 'No pending verification found under this username or email.',
+		'reseve_nopendi' => 'This account is already verified. You can log in.',
+		'reseve_novcode' => 'No activation code under this account. Please contact admin.',
+		'reseve_notsent' => 'Failed to send verification email. Please contact admin.',
+		//confirmations
+		'reseve_success' => 'Verification email has been re-sent. Please make sure to check your spam/junk mail.',
+		//settings module
+		//errors
+		'settng_inpmism' => 'New passwords do not match.', 
+		'settng_inpulen' => 'New password must be at least 6 characters.',
+		'settng_xcurpas' => 'Current password is incorrect.',
+		//confirmations
+		'settng_success' => 'Password updated successfully.',
 		
 		//actions
 		//unstuck

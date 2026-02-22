@@ -24,5 +24,6 @@ CREATE TABLE IF NOT EXISTS `cp_accounts` (
   `verified` TINYINT(1) NOT NULL DEFAULT 0,
   `activation_code` VARCHAR(64) DEFAULT NULL,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `device_fingerprint` VARCHAR(32) DEFAULT '',
   PRIMARY KEY (`account_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

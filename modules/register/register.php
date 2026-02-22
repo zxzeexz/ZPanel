@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!empty($config['security']['csrf_protection'])) {
         $token = $_POST['csrf_token'] ?? '';
         if (!csrf_verify($token)) {
-            $error = "Invalid session token. Please try again.";
+            $error = $config['msg']['form_csrferror'];
         }
     }
 
@@ -38,18 +38,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Basic validation
     if (!$error) {
         if ($username === '' || $email === '' || $password === '' || $password2 === '' || $sex === '' || $birthdate === '') {
-            $error = "All fields are required.";
+            $error = $config['msg']['regist_nullfld'];
         } elseif ($password !== $password2) {
-            $error = "Passwords do not match.";
+            $error = $config['msg']['regist_verpass'];
         } elseif (!in_array($sex, ['M','F'], true)) {
-            $error = "Invalid sex selection.";
+            $error = $config['msg']['regist_invasex'];
         } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $error = "Invalid email address.";
+            $error = $config['msg']['regist_invemai'];
         } else {
             $dt = DateTime::createFromFormat('Y-m-d', $birthdate);
             if (!$dt || $dt->format('Y-m-d') !== $birthdate) {
-                $error = "Invalid birthdate format. Use YYYY-MM-DD.";
+                $error = $config['msg']['regist_bdformt'];
             }
+        }
+    }
+	
+	//Validate email domain
+	if (!$error) {
+        $domain = strtolower(substr(strrchr($email, "@"), 1));
+        $allowedDomains = $config['registration']['allowed_email_domains'] ?? [];
+        if (!empty($allowedDomains) && !in_array($domain, $allowedDomains)) {
+            $error = $config['msg']['regist_xdomain'];
         }
     }
 
@@ -60,9 +69,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $rowEmail = db_fetch("SELECT account_id FROM cp_accounts WHERE email = :e LIMIT 1",    [':e' => $email]);
 
         if ($rowUser) {
-            $error = "Username already taken.";
+            $error = $config['msg']['regist_dupuser'];
         } elseif ($rowEmail) {
-            $error = "Email already registered.";
+            $error = $config['msg']['regist_dupmail'];
         }
     }
 
@@ -73,7 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $row = db_fetch("SELECT COUNT(*) AS cnt FROM cp_accounts WHERE reg_ip = :ip", [':ip' => $ip]);
             $count = (int)($row['cnt'] ?? 0);
             if ($count >= $limit) {
-                $error = "Maximum number of accounts reached for your IP address.";
+                $error = $config['msg']['regist_aclimit'];
             }
         }
     }
@@ -85,7 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $row = db_fetch("SELECT COUNT(*) AS cnt FROM cp_accounts WHERE device_fingerprint = :fp", [':fp' => $device_fingerprint]);
             $count = (int)($row['cnt'] ?? 0);
             if ($count >= $limit) {
-                $error = "Maximum number of accounts reached for this device.";
+                $error = $config['msg']['regist_aclimit'];
             }
         }
     }
@@ -146,10 +155,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $sent = sendMail($email, $subject, $body);
 
                 if ($sent) {
-                    $success = "Account created! Please check your email for the verification link.";
+                    $success = $config['msg']['regist_success'];
                 } else {
                     // Email failed. keep account unverified, inform admin
-                    $error = "Account created, but failed to send verification email. Contact admin.";
+                    $error = $config['msg']['regist_sucxeml'];
                 }
             } else {
 				// Directly verified → also insert into login table
@@ -161,10 +170,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 					':email'     => $email,
 					':birthdate' => $birthdate,
 				]);
-                $success = "Account created successfully. You may now log in.";
+                $success = $config['msg']['regist_succes2'];
             }
         } else {
-            $error = "Failed to create account. Please try again later.";
+            $error = $config['msg']['regist_dberror'];
         }
     }
 }

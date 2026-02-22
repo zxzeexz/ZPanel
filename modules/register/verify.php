@@ -26,7 +26,7 @@ if ($code !== '' && $username !== '') {
         $isVerified = (int)($row['verified'] ?? 0);
         if ($isVerified === 1) {
             $status  = 'info';
-            $message = 'This account has already been verified. You may log in.';
+            $message = $config['msg']['regis2_donever'];
         } else {
             $ok = db_execute(
                 "UPDATE cp_accounts 
@@ -54,19 +54,19 @@ if ($code !== '' && $username !== '') {
 					]);
 				}
                 $status  = 'success';
-                $message = 'Your account has been verified! You can now log in.';
+                $message = $config['msg']['regis2_verfied'];
             } else {
                 $status  = 'error';
-                $message = 'Failed to verify account due to a server error. Please contact admin.';
+                $message = $config['msg']['regis2_dberror'];
             }
         }
     } else {
         $status  = 'error';
-        $message = 'Verification failed. The link is invalid or the account does not exist.';
+        $message = $config['msg']['regis2_vrerror'];
     }
 } else {
     $status  = 'error';
-    $message = 'Invalid verification link.';
+    $message = $config['msg']['regis2_badlink'];
 }
 // Render just the inner content header/footer are included by index.php
 ?>
