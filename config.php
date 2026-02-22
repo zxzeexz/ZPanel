@@ -97,11 +97,14 @@ return [
 		//errors
 		'chview_invchid' => 'Invalid character ID.',
 		'chview_xauthid' => 'Error accessing this page.',
+		
+		//actions
 		//unstuck
-		'chview_unotfnd' => 'Character not found.',
-		'chview_unisonl' => 'Character is online. Please logout first and try again.',
-		'chview_unsucce' => 'Character unstuck successfully!',
-		'chview_unerror' => 'Failed to update character.',
+		'action_unotfnd' => 'Character not found.',
+		'action_unisonl' => 'Character is online. Please logout first and try again.',
+		'action_unsucce' => 'Character unstuck successfully!',
+		'action_unerror' => 'Failed to update character.',
+		'action_undisab' => 'Unstuck feature is disabled.',
 	],
 
 ];
