@@ -58,6 +58,9 @@ if (!csrf_verify($token)) {
 }
 
 // Redirect back (use POSTed redirect if set, else default to dashboard)
-$redirect = $_POST['redirect'];
+$redirect = $_POST['redirect'] ?? BASE_URL . 'dashboard';
+if (strpos($redirect, BASE_URL) !== 0) {
+    $redirect = BASE_URL . 'dashboard';
+}
 header('Location: ' . $redirect);
 exit;
