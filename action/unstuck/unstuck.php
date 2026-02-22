@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['unstuck_char_id'])) 
     exit;
 }
 
-$token = $_POST['csrf_token'];
+$token = $_POST['csrf_token'] ?? '';
 if (!csrf_verify($token)) {
     $_SESSION['flash'] = ['type' => 'danger', 'msg' => $config['msg']['form_csrferror']];
 } else {

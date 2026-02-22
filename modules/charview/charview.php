@@ -18,12 +18,7 @@ $accountId = Session::getAccountId();
 $charId    = isset($_GET['char_id']) ? (int) $_GET['char_id'] : 0;
 
 // Load unstuck config
-$unstuckConfig = $config['unstuck'] ?? [
-    'enabled' => false,
-    'town'    => 'prontera',
-    'x'       => 150,
-    'y'       => 180,
-];
+$unstuckConfig = $config['unstuck'];
 
 if ($charId <= 0) {
     echo '<div class="alert alert-danger">'.$config['msg']['chview_invchid'].'</div>';
@@ -49,11 +44,12 @@ if (!$char) {
     exit;
 }
 
-// Handle Unstuck action
+// Handle Unstuck action (reverted to local processing)
+$unstuckMessage = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['unstuck_char_id'])) {
     $token = $_POST['csrf_token'] ?? '';
     if (!csrf_verify($token)) {
-        echo '<div class="alert alert-danger">'.$config['msg']['form_csrferror'].'</div>';
+        $unstuckMessage = '<div class="alert alert-danger">'.$config['msg']['form_csrferror'].'</div>';
     } else {
         $unstuckCharId = (int) $_POST['unstuck_char_id'];
 
@@ -64,9 +60,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['unstuck_char_id'])) {
         );
 
         if (!$c) {
-            echo '<div class="alert alert-danger">'.$config['msg']['chview_unotfnd'].'</div>';
+            $unstuckMessage = '<div class="alert alert-danger">'.$config['msg']['action_unotfnd'].'</div>';
         } elseif ((int) $c['online'] === 1) {
-            echo '<div class="alert alert-danger">'.$config['msg']['chview_unisonl'].'</div>';
+            $unstuckMessage = '<div class="alert alert-danger">'.$config['msg']['action_unisonl'].'</div>';
         } elseif ($unstuckConfig['enabled']) {
             $ok = db_execute(
                 "UPDATE `char` 
@@ -81,15 +77,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['unstuck_char_id'])) {
             );
 
             if ($ok) {
-                echo '<div class="alert alert-success">'.$config['msg']['chview_unsucce'].'</div>';
+                $unstuckMessage = '<div class="alert alert-success">'.$config['msg']['action_unsucce'].'</div>';
             } else {
-                echo '<div class="alert alert-danger">'.$config['msg']['chview_unerror'].'</div>';
+                $unstuckMessage = '<div class="alert alert-danger">'.$config['msg']['action_unerror'].'</div>';
             }
+        } else {
+            $unstuckMessage = '<div class="alert alert-danger">'.$config['msg']['action_undisab'].'</div>';
         }
     }
 }
 ?>
 <div class="container mt-5">
+    <?php if (isset($_SESSION['flash'])): ?>
+        <div class="alert alert-<?= e($_SESSION['flash']['type']) ?>"><?= e($_SESSION['flash']['msg']) ?></div>
+        <?php unset($_SESSION['flash']); ?>
+    <?php endif; ?>
+    <?= $unstuckMessage; ?>
     <div class="row mb-4">
         <div class="col">
             <h2 class="mb-3">
@@ -102,7 +105,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['unstuck_char_id'])) {
 				<?php endif; ?>
 			</h2>
             <div class="btn-group" role="group">
-                <a href="<?= BASE_URL ?>dashboard" class="btn btn-outline-primary">
+                <a href="<?= BASE_URL ?>/dashboard" class="btn btn-outline-primary">
                     <i class="fas fa-home"></i> Dashboard
                 </a>
             </div>
