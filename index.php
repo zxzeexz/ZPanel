@@ -10,7 +10,7 @@
 require_once __DIR__ . '/init.php';
 
 // -----------------------------
-// Parse request URI
+# Parse request URI
 // -----------------------------
 $basePath   = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/');
 $requestUri = str_replace($basePath, '', $_SERVER['REQUEST_URI']);
@@ -42,7 +42,7 @@ if ($type === 'action' && empty($module)) {
 }
 
 // -----------------------------
-// Resolve module/action file
+# Resolve module/action file
 // -----------------------------
 $moduleFile = __DIR__ . "/{$type}/{$module}/{$module}.php";
 
@@ -53,8 +53,8 @@ if (!file_exists($moduleFile)) {
 }
 
 // -----------------------------
-// Load theme layout (only for modules, not actions)
-// -----------------------------
+# Load theme layout (only for modules, not actions)
+# -----------------------------
 if ($type === 'modules') {
     $theme     = $config['theme']['default'];
     $themePath = __DIR__ . "/themes/{$theme}/layouts";

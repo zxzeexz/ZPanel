@@ -43,56 +43,12 @@ if (!$char) {
     echo '<div class="alert alert-danger">'.$config['msg']['chview_xauthid'].'</div>';
     exit;
 }
-
-// Handle Unstuck action (reverted to local processing)
-$unstuckMessage = '';
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['unstuck_char_id'])) {
-    $token = $_POST['csrf_token'] ?? '';
-    if (!csrf_verify($token)) {
-        $unstuckMessage = '<div class="alert alert-danger">'.$config['msg']['form_csrferror'].'</div>';
-    } else {
-        $unstuckCharId = (int) $_POST['unstuck_char_id'];
-
-        // Verify again for safety
-        $c = db_fetch(
-            "SELECT char_id, online FROM `char` WHERE char_id = :cid AND account_id = :aid LIMIT 1",
-            [':cid' => $unstuckCharId, ':aid' => $accountId]
-        );
-
-        if (!$c) {
-            $unstuckMessage = '<div class="alert alert-danger">'.$config['msg']['action_unotfnd'].'</div>';
-        } elseif ((int) $c['online'] === 1) {
-            $unstuckMessage = '<div class="alert alert-danger">'.$config['msg']['action_unisonl'].'</div>';
-        } elseif ($unstuckConfig['enabled']) {
-            $ok = db_execute(
-                "UPDATE `char` 
-                 SET last_map = :map, last_x = :x, last_y = :y 
-                 WHERE char_id = :cid",
-                [
-                    ':map' => $unstuckConfig['town'],
-                    ':x'   => $unstuckConfig['x'],
-                    ':y'   => $unstuckConfig['y'],
-                    ':cid' => $unstuckCharId,
-                ]
-            );
-
-            if ($ok) {
-                $unstuckMessage = '<div class="alert alert-success">'.$config['msg']['action_unsucce'].'</div>';
-            } else {
-                $unstuckMessage = '<div class="alert alert-danger">'.$config['msg']['action_unerror'].'</div>';
-            }
-        } else {
-            $unstuckMessage = '<div class="alert alert-danger">'.$config['msg']['action_undisab'].'</div>';
-        }
-    }
-}
 ?>
 <div class="container mt-5">
     <?php if (isset($_SESSION['flash'])): ?>
         <div class="alert alert-<?= e($_SESSION['flash']['type']) ?>"><?= e($_SESSION['flash']['msg']) ?></div>
         <?php unset($_SESSION['flash']); ?>
     <?php endif; ?>
-    <?= $unstuckMessage; ?>
     <div class="row mb-4">
         <div class="col">
             <h2 class="mb-3">
@@ -105,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['unstuck_char_id'])) {
 				<?php endif; ?>
 			</h2>
             <div class="btn-group" role="group">
-                <a href="<?= BASE_URL ?>/dashboard" class="btn btn-outline-primary">
+                <a href="<?= BASE_URL ?>dashboard" class="btn btn-outline-primary">
                     <i class="fas fa-home"></i> Dashboard
                 </a>
             </div>
@@ -173,9 +129,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['unstuck_char_id'])) {
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            <form method="post" class="d-inline">
+            <form method="post" action="<?= BASE_URL ?>action/unstuck" class="d-inline">
                 <input type="hidden" name="unstuck_char_id" value="<?= $char['char_id'] ?>">
                 <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
+                <input type="hidden" name="redirect" value="<?= BASE_URL ?>charview?char_id=<?= $charId ?>">
                 <button type="submit" class="btn btn-warning">
                     Yes, Unstuck
                 </button>

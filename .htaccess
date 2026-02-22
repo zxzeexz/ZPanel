@@ -43,7 +43,7 @@ RewriteRule ^themes/.*\.(php|ini|sql|sh|bak|swp)$ - [F,L]
 	# If only /root_path/ is requested, route it to index.php
 	RewriteRule ^$ index.php [L]
 	
-	# FIX: Force rewrite for /action/* paths (even if dir exists)
+	# Force rewrite for /action/* paths to fix 403
 	RewriteRule ^action/(.+)$ index.php [QSA,L]
 	
 	# Redirect all other requests to index.php (front controller)
