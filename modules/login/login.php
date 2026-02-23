@@ -80,10 +80,9 @@ if (isset($config['registration']['email_verification'])) {
                 </div>
                 <div class="card-body">
                     <?php if ($error): ?>
-                        <div class="alert alert-danger"><?= e($error) ?></div>
-                    <?php endif; ?>
-					<?php if ($_GET['logout'] && $_GET['logout'] == 1): ?>
-						<div class="alert alert-primary"><?= e($config['msg']['login_loggedout']) ?></div>
+						<div class="alert alert-danger"><?= e($error) ?></div>
+					<?php elseif (isset($_GET['logout']) && $_GET['logout'] == 1): ?>
+						<div class="alert alert-success"><?= e($config['msg']['login_loggedout']) ?></div>
 					<?php endif; ?>
                     <form method="post" action="">
                         <!-- CSRF token (procedural) -->

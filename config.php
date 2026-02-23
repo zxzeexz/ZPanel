@@ -5,7 +5,7 @@
  * Revision 1 [9-12-2025]
  * Zee ^_~
  */
-$siteUrl = 'http://localhost';					//Specify [protocol (http or https)]://[hostname]:[port] under where ZPanel runs.
+$siteUrl = 'http://47.129.100.170';					//Specify [protocol (http or https)]://[hostname]:[port] under where ZPanel runs.
 return [
     // -----------------------------
     // Site Settings
@@ -28,7 +28,7 @@ return [
         'port'     => '3306',
         'name'     => 'c2ro_main',
         'user'     => 'root',
-        'pass'     => '123123',
+        'pass'     => '837829318',
         'charset'  => 'utf8mb4',
     ],
 
@@ -38,6 +38,7 @@ return [
     'security' => [
         'hash_method'        => 'plain',   		//Toggle password hashing [md5 | plain | bcrypt]
         'csrf_protection'    => true,			//Toggle use of CSRF protection.
+	'max_logintime'      => 5,			//Login session time (in seconds)
     ],
 
     // -----------------------------

@@ -266,3 +266,40 @@ body {
 #username_or_email::placeholder {
     color: rgba(0, 0, 0, 0.5); /* Bootstrap's .text-black-50 equivalent */
 }
+/* sidebar styling */
+@media (min-width: 992px) { /* Desktop - fixed sidebar */
+    #sidebarMenu {
+        position: fixed;
+        top: 56px; /* Below navbar height */
+        left: 0;
+        width: 250px;
+        height: calc(100vh - 56px);
+        overflow-y: auto;
+        transform: none !important;
+        visibility: visible !important;
+        background-color: #f8f9fa; /* Light background */
+    }
+    .container.mt-4 {
+        margin-left: 250px; /* Push content right */
+    }
+}
+
+@media (max-width: 991px) { /* Mobile - offcanvas, hamburger next to logo, content below navbar */
+    #sidebarMenu {
+        width: 250px;
+    }
+    .navbar-brand {
+        margin-left: 10px; /* Space between hamburger and logo */
+    }
+    .container.mt-4 {
+        margin-left: 0; /* Content full width below navbar */
+    }
+}
+
+.list-group-item .nav-link {
+    color: #333;
+    text-decoration: none;
+}
+.list-group-item .nav-link:hover {
+    color: #007bff;
+}

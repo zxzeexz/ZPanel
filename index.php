@@ -53,9 +53,10 @@ if (!file_exists($moduleFile)) {
 }
 
 // -----------------------------
-# Load theme layout (only for modules, not actions)
+# Load theme layout (only for modules, not actions or logout)
 # -----------------------------
-if ($type === 'modules') {
+$skipLayoutModules = ['logout'];  // Skip layout for logout to allow headers/redirect
+if ($type === 'modules' && !in_array($module, $skipLayoutModules)) {
     $theme     = $config['theme']['default'];
     $themePath = __DIR__ . "/themes/{$theme}/layouts";
 
@@ -66,7 +67,7 @@ if ($type === 'modules') {
 // Load the file (action or module)
 include $moduleFile;
 
-// Include footer only for modules
-if ($type === 'modules') {
+// Include footer only for modules that use layout
+if ($type === 'modules' && !in_array($module, $skipLayoutModules)) {
     include $themePath . '/footer.php';
 }
