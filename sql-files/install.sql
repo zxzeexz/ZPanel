@@ -9,6 +9,8 @@ CREATE TABLE IF NOT EXISTS `cp_sessions` (
   `account_id` INT(11) NOT NULL,
   `ip_address` VARCHAR(45) NOT NULL,
   `expires_at` INT(11) NOT NULL,
+  `isActive` TINYINT(1) NOT NULL DEFAULT 0,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`session_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -26,4 +28,13 @@ CREATE TABLE IF NOT EXISTS `cp_accounts` (
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `device_fingerprint` VARCHAR(32) DEFAULT '',
   PRIMARY KEY (`account_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--cp_pwreset
+CREATE TABLE `cp_pwreset` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `userid` VARCHAR(32) NOT NULL,
+    `token` VARCHAR(64) NOT NULL,
+    `expires_at` INT NOT NULL,
+    UNIQUE KEY (`userid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

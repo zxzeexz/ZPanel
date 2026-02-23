@@ -73,7 +73,7 @@ if (isset($config['registration']['email_verification'])) {
 ?>
 <div class="container mt-5">
     <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-4">
+        <div class="col-md-8 col-lg-5">
             <div class="card shadow border-0">
                 <div class="card-header bg-primary text-white text-center">
                     <h4><i class="fas fa-sign-in-alt"></i> Login</h4>
@@ -108,13 +108,16 @@ if (isset($config['registration']['email_verification'])) {
                     </form>
                 </div>
                 <div class="card-footer text-center">
-                    <small>
-                        <a href="<?= BASE_URL ?>register">Create an account</a>
+					<small>
+						<a href="<?= BASE_URL ?>register">Create an account</a>
 						<?php if ($requiresVerification): ?>
-                            | <a href="<?= BASE_URL ?>resendve">Resend confirmation email</a>
-                        <?php endif; ?>
-                    </small>
-                </div>
+							| <a href="<?= BASE_URL ?>resendve">Resend confirmation email</a>
+						<?php endif; ?>
+						<?php if ($config['pwreset']['enabled'] ?? false): ?>
+							| <a href="<?= BASE_URL ?>pwreset">Forgot Password?</a>
+						<?php endif; ?>
+					</small>
+				</div>
             </div>
         </div>
     </div>

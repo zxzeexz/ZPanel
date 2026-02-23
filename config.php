@@ -18,7 +18,7 @@ return [
     // -----------------------------
     // Debug Mode
     // -----------------------------
-    'debug' => true,								//Toggle error reporting
+    'debug' => false,								//Toggle error reporting
 
     // -----------------------------
     // Database Settings - supports only MySQL/MariaDB.
@@ -28,7 +28,7 @@ return [
         'port'     => '3306',
         'name'     => 'c2ro_main',
         'user'     => 'root',
-        'pass'     => '837829318',
+        'pass'     => 'zzz',
         'charset'  => 'utf8mb4',
     ],
 
@@ -38,7 +38,7 @@ return [
     'security' => [
         'hash_method'        => 'plain',   		//Toggle password hashing [md5 | plain | bcrypt]
         'csrf_protection'    => true,			//Toggle use of CSRF protection.
-	'max_logintime'      => 5,			//Login session time (in seconds)
+	'max_logintime'      => 3600,			//Login session time
     ],
 
     // -----------------------------
@@ -76,18 +76,19 @@ return [
     // Email / PHPMailer Settings - Only if you enable email_verification
     // -----------------------------
     'mail' => [
-        'host'       => 'smtp.example.com',
+        'host'       => 'smtp.gmail.com',
         'port'       => 587,
-        'username'   => 'user',
-        'password'   => 'pass',
-        'from_email' => 'noreply@example.com',
-        'from_name'  => 'ZPanel No-reply',
-        'reply_email'=> 'support@example.com',	//Fallback for replies (probably avoids the email being marked as spam)
-        'reply_name' => 'ZPanel Support',
-        'hostname'   => 'example.com',			//Must match your domain DNS
+        'username'   => 'example@gmail.com',
+        'password'   => 'secretpassword',
+        'from_email' => 'example@gmail.com',
+        'from_name'  => 'Project Baldur',
+        'reply_email'=> 'example@gmail.com',	//Fallback for replies (probably avoids the email being marked as spam)
+        'reply_name' => 'Project Baldur',
+        'hostname'   => 'projectbaldur.servegame.com',		//Must match your domain DNS
         'debug'      => 0,						//Toggle emailer debug 0=off, 2=verbose debug
 		//email subjects section
 		'verification_email' => 'YourRO - Activate your account',
+		'passwrdreset_email' => 'YourRO - Password Reset',
     ],
 	// -----------------------------
 	// Unstuck Feature (Account and player dashboard)
@@ -97,6 +98,14 @@ return [
 		'town'    => 'prontera',				//Map ID
 		'x'       => 150,
 		'y'       => 150,
+	],
+	
+	// -----------------------------
+	// Password Reset Options
+	// -----------------------------
+	'pwreset' => [
+		'enabled'    => true,    // Toggle feature on/off
+		'expiry'     => 36000,    // Reset link expiry time (in seconds, e.g., 10 hours)
 	],
 
 	//messages
@@ -156,7 +165,20 @@ return [
 		'settng_xcurpas' => 'Current password is incorrect.',
 		//confirmations
 		'settng_success' => 'Password updated successfully.',
-		
+		// pwreset module
+		// errors
+		'pwres_disable' => 'Password reset is currently disabled.',
+		'pwres_nullinp' => 'Please enter your username or email.',
+		'pwres_noaccnt' => 'No account found with that username or email.',
+		'pwres_notsent' => 'Failed to send reset email. Please contact admin.',
+		'pwres_badlink' => 'Invalid or expired reset link.',
+		'pwres_inpmism' => 'New passwords do not match.',
+		'pwres_inpulen' => 'New password must be at least 6 characters.',
+		'pwres_dberror' => 'Failed to fetch or update account data. Please contact admin',
+		// confirmations
+		'pwres_reqsent' => 'Password reset link sent to your email. Please make sure to check your spam/junk mail.',
+		'pwres_success' => 'Password reset successfully. You can now log in.',
+	
 		//actions
 		//unstuck
 		'action_unotfnd' => 'Character not found.',

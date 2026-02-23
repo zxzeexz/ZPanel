@@ -98,8 +98,8 @@ if (!empty($config['security']['csrf_protection']) && $config['security']['csrf_
 // -----------------------------
 // Redirect after login support
 // -----------------------------
-if (!Session::isLoggedIn() && !preg_match('#/(login|register|resendve)#', $_SERVER['REQUEST_URI'])) {
-    // Save intended destination (but skip login, register & resendve pages)
+if (!Session::isLoggedIn() && !preg_match('#/(login|register|resendve|pwreset)#', $_SERVER['REQUEST_URI'])) {
+    // Save intended destination (but skip login, register, pwreset and resendve pages)
     $_SESSION['redirect_after_login'] = $_SERVER['REQUEST_URI'];
 }
 

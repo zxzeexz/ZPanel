@@ -22,6 +22,8 @@ require_once __DIR__ . '/../../../init.php';
     <link href="<?= BASE_URL ?>themes/default/css/style.css" rel="stylesheet">
     <!-- Favicon -->
     <link rel="icon" href="<?= BASE_URL ?>themes/default/favicon.ico" type="image/x-icon">
+	<!-- global-form -->
+	<script src="<?= BASE_URL ?>assets/global-forms/global-forms.js"></script>
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
