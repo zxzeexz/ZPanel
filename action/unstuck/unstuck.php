@@ -4,8 +4,8 @@ require_once __DIR__ . '/../../init.php';  // Loads DB, config, session, etc.
 
 // Only allow logged-in users
 if (!Session::isLoggedIn()) {
-    header('Location: ' . BASE_URL . 'login');
-    exit;
+    $redirect = BASE_URL . 'login' . (Session::getLastError() === 'expired' ? '?logout=2' : '');
+    redirect($redirect);
 }
 
 $accountId = Session::getAccountId();

@@ -7,8 +7,14 @@
  */
 require_once __DIR__ . '/../../init.php';
 
+// Ensure logged in
 if (!Session::isLoggedIn()) {
-    redirect(BASE_URL . 'login');
+    $redirect = BASE_URL . 'login';
+    if (Session::getLastError() === 'expired') {
+        $redirect .= '?logout=2';
+    }
+    $_SESSION['intended_url'] = $_SERVER['REQUEST_URI'] ?? (BASE_URL . 'dashboard');
+    redirect($redirect);
 }
 
 $accountId = Session::getAccountId();

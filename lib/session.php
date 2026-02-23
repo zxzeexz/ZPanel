@@ -2,11 +2,18 @@
 /**
  * lib/session.php
  * ZPanel session handler
- * Revision 2 [9-21-2025]
+ * Revision 3 [updated for expiry fix]
  * Zee ^_~
  */
 class Session
 {
+    private static string $last_error = '';
+
+    public static function getLastError(): string
+    {
+        return self::$last_error;
+    }
+
     // Check if user is logged in
     public static function isLoggedIn(): bool
     {
@@ -16,13 +23,13 @@ class Session
     // Create a new session in cp_sessions
     public static function create(int $accountId, string $username): bool
     {
-		// Cleanup expired sessions before creating a new one
-		$sqlCleanup = "DELETE FROM cp_sessions WHERE expires_at < :now";
-		db_execute($sqlCleanup, [':now' => time()]);
-		
+        // Cleanup expired sessions before creating a new one
+        $sqlCleanup = "DELETE FROM cp_sessions WHERE expires_at < :now";
+        db_execute($sqlCleanup, [':now' => time()]);
+        
         $sessionId = bin2hex(random_bytes(32));
         $ip        = getUserIp();
-		$lifetime  = $config['security']['max_logintime'] ?? 3600;
+        $lifetime  = $config['security']['max_logintime'] ?? 3600;
         $expiry    = time() + $lifetime;
 
         // Save in DB
@@ -49,25 +56,40 @@ class Session
     // Validate session against DB
     public static function validateSession(string $sessionId): bool
     {
+        self::$last_error = ''; // Reset error
+
         if (empty($sessionId)) {
             return false;
         }
-		// Cleanup: remove expired sessions
-		$sqlCleanup = "DELETE FROM cp_sessions WHERE expires_at < :now";
-		db_execute($sqlCleanup, [':now' => time()]);
-		
-        $sql  = "SELECT * FROM cp_sessions WHERE session_id = :sid LIMIT 1";
-        $row  = db_fetch($sql, [':sid' => $sessionId]);
+
+        // Select the session first (before cleanup)
+        $sql = "SELECT * FROM cp_sessions WHERE session_id = :sid LIMIT 1";
+        $row = db_fetch($sql, [':sid' => $sessionId]);
 
         if (!$row) {
+            self::$last_error = 'invalid';
             return false;
         }
 
-        // Expired?
-        if ($row['expires_at'] < time()) {
+        $expired = $row['expires_at'] < time();
+        if ($expired) {
+            self::$last_error = 'expired';
+        }
+
+        // Now cleanup all expired sessions (including this one if expired)
+        $sqlCleanup = "DELETE FROM cp_sessions WHERE expires_at < :now";
+        db_execute($sqlCleanup, [':now' => time()]);
+
+        if ($expired) {
             self::destroy();
             return false;
         }
+
+        // Sliding expiry: Extend if valid (inactivity timeout)
+        $lifetime = $config['security']['max_logintime'] ?? 3600;
+        $newExpiry = time() + $lifetime;
+        $sqlUpdate = "UPDATE cp_sessions SET expires_at = :newexp WHERE session_id = :sid";
+        db_execute($sqlUpdate, [':newexp' => $newExpiry, ':sid' => $sessionId]);
 
         return true;
     }

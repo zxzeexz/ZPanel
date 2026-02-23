@@ -108,6 +108,7 @@ return [
 		'login_nullusrpw' => 'Please enter both username and password.',
 		'login_wrongpass' => 'Invalid password.',
 		'login_noaccount' => 'Account not found.',
+		'login_seexpired' => 'Logged out due to session expired.',
 		//confirmations
 		'login_loggedout' => 'Logged out successfully.',
 		//charview module
