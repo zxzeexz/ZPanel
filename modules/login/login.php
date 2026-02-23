@@ -85,7 +85,7 @@ if (isset($config['registration']['email_verification'])) {
 							if ($_GET['logout'] == 1): ?>
 								<div class="alert alert-success"><?= e($config['msg']['login_loggedout']) ?></div>
 							<?php elseif ($_GET['logout'] == 2): ?>
-								<div class="alert alert-success"><?= e($config['msg']['login_seexpired']) ?></div>
+								<div class="alert alert-warning"><?= e($config['msg']['login_seexpired']) ?></div>
 							<?php endif; ?>
 					<?php endif; ?>
                     <form method="post" action="">
