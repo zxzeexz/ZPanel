@@ -4,7 +4,10 @@ require_once __DIR__ . '/../../init.php';  // Loads DB, config, session, etc.
 
 // Only allow logged-in users
 if (!Session::isLoggedIn()) {
-    $redirect = BASE_URL . 'login' . (Session::getLastError() === 'expired' ? '?logout=2' : '');
+    Session::cleanupExpired();  // Run cleanup here — after validation set $last_error
+    $lastError = Session::getLastError();
+    $redirect = BASE_URL . 'login?logout=2';
+    $_SESSION['intended_url'] = $_SERVER['REQUEST_URI'] ?? (BASE_URL . 'dashboard');
     redirect($redirect);
 }
 

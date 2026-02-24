@@ -83,6 +83,9 @@ if (file_exists(ROOT_PATH . '/lib/csrf.php')) {
 }
 require_once ROOT_PATH . '/lib/session.php';
 
+// Global expired session cleanup (marks abandoned as inactive on every request)
+Session::cleanupExpired();
+
 // -----------------------------
 // CSRF Protection Toggle
 // -----------------------------
@@ -102,4 +105,3 @@ if (!Session::isLoggedIn() && !preg_match('#/(login|register|resendve|pwreset)#'
     // Save intended destination (but skip login, register, pwreset and resendve pages)
     $_SESSION['redirect_after_login'] = $_SERVER['REQUEST_URI'];
 }
-

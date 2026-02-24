@@ -9,10 +9,9 @@ require_once __DIR__ . '/../../init.php';
 
 // Ensure logged in
 if (!Session::isLoggedIn()) {
-    $redirect = BASE_URL . 'login';
-    if (Session::getLastError() === 'expired') {
-        $redirect .= '?logout=2';
-    }
+    Session::cleanupExpired();  // Run cleanup here — after validation set $last_error
+    $lastError = Session::getLastError();
+    $redirect = BASE_URL . 'login?logout=2';
     $_SESSION['intended_url'] = $_SERVER['REQUEST_URI'] ?? (BASE_URL . 'dashboard');
     redirect($redirect);
 }

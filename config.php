@@ -18,7 +18,7 @@ return [
     // -----------------------------
     // Debug Mode
     // -----------------------------
-    'debug' => false,								//Toggle error reporting
+    'debug' => true,								//Toggle error reporting
 
     // -----------------------------
     // Database Settings - supports only MySQL/MariaDB.
@@ -28,7 +28,7 @@ return [
         'port'     => '3306',
         'name'     => 'c2ro_main',
         'user'     => 'root',
-        'pass'     => 'zzz',
+        'pass'     => 'pass',
         'charset'  => 'utf8mb4',
     ],
 
@@ -38,7 +38,7 @@ return [
     'security' => [
         'hash_method'        => 'plain',   		//Toggle password hashing [md5 | plain | bcrypt]
         'csrf_protection'    => true,			//Toggle use of CSRF protection.
-	'max_logintime'      => 3600,			//Login session time
+	'max_logintime'      => 3600,			//Login session time (in seconds)
     ],
 
     // -----------------------------
@@ -78,13 +78,13 @@ return [
     'mail' => [
         'host'       => 'smtp.gmail.com',
         'port'       => 587,
-        'username'   => 'example@gmail.com',
-        'password'   => 'secretpassword',
-        'from_email' => 'example@gmail.com',
-        'from_name'  => 'Project Baldur',
-        'reply_email'=> 'example@gmail.com',	//Fallback for replies (probably avoids the email being marked as spam)
-        'reply_name' => 'Project Baldur',
-        'hostname'   => 'projectbaldur.servegame.com',		//Must match your domain DNS
+        'username'   => 'user',
+        'password'   => 'pass',
+        'from_email' => 'email@gmail.com',
+        'from_name'  => 'ZPanel',
+        'reply_email'=> 'email@gmail.com',	//Fallback for replies (probably avoids the email being marked as spam)
+        'reply_name' => 'ZPanel',
+        'hostname'   => 'example.com',		//Must match your domain DNS
         'debug'      => 0,						//Toggle emailer debug 0=off, 2=verbose debug
 		//email subjects section
 		'verification_email' => 'YourRO - Activate your account',

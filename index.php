@@ -41,6 +41,11 @@ if ($type === 'action' && empty($module)) {
     $module = 'errors/404';
 }
 
+// Redirect if trying to access login while logged in (before any output)
+if ($module === 'login' && Session::isLoggedIn()) {
+    redirect(BASE_URL . 'dashboard');  // Or wherever you want to send them
+}
+
 // -----------------------------
 # Resolve module/action file
 // -----------------------------
