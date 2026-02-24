@@ -15,7 +15,7 @@ if (Session::isLoggedIn()) {
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // CSRF: use procedural helper loaded by init.php
+    // CSRF check first (always required if enabled)
     $token = $_POST['csrf_token'] ?? '';
     if (!csrf_verify($token)) {
         $error = $config['msg']['form_csrferror'];
@@ -26,41 +26,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($username === '' || $password === '') {
             $error = $config['msg']['login_nullusrpw'];
         } else {
-            // Fetch account from `login` table
-            $sql = "SELECT account_id, userid, user_pass FROM `login` WHERE userid = :u LIMIT 1";
-            $row = db_fetch($sql, [':u' => $username]);
-
-            if ($row) {
-                $dbPass = $row['user_pass'];
-                $isValid = false;
-
-                // bcrypt / password_hash
-                if (password_verify($password, $dbPass)) {
-                    $isValid = true;
+            // Turnstile check (only if enabled)
+            if ($config['turnstile']['enabled'] ?? false) {
+                $turnstileToken = $_POST['cf-turnstile-response'] ?? '';
+                if (empty($turnstileToken)) {
+                    $error = $config['msg']['turnstile_missing'];
+                } elseif (!turnstile_validate()) {
+                    $error = $config['msg']['turnstile_invalid'];
                 }
-                // plain text
-                elseif ($password === $dbPass) {
-                    $isValid = true;
-                }
-                // legacy md5
-                elseif (md5($password) === $dbPass) {
-                    $isValid = true;
-                }
+            }
 
-                if ($isValid) {
-                    // Create session with real game account_id and username
-                    // Ensure Session::create expects (int $accountId, string $username)
-                    Session::create((int)$row['account_id'], $row['userid']);
+            // If no error so far, proceed to auth
+            if (!isset($error)) {
+                // Fetch account from `login` table
+                $sql = "SELECT account_id, userid, user_pass FROM `login` WHERE userid = :u LIMIT 1";
+                $row = db_fetch($sql, [':u' => $username]);
 
-                    $redirectTo = $_SESSION['redirect_after_login'] ?? (BASE_URL . 'dashboard');
-                    unset($_SESSION['redirect_after_login']);
+                if ($row) {
+                    $dbPass = $row['user_pass'];
+                    $isValid = false;
 
-                    redirect($redirectTo);
+                    // bcrypt / password_hash
+                    if (password_verify($password, $dbPass)) {
+                        $isValid = true;
+                    }
+                    // plain text
+                    elseif ($password === $dbPass) {
+                        $isValid = true;
+                    }
+                    // legacy md5
+                    elseif (md5($password) === $dbPass) {
+                        $isValid = true;
+                    }
+
+                    if ($isValid) {
+                        // Create session with real game account_id and username
+                        // Ensure Session::create expects (int $accountId, string $username)
+                        Session::create((int)$row['account_id'], $row['userid']);
+
+                        $redirectTo = $_SESSION['redirect_after_login'] ?? (BASE_URL . 'dashboard');
+                        unset($_SESSION['redirect_after_login']);
+
+                        redirect($redirectTo);
+                    } else {
+                        $error = $config['msg']['login_wrongpass'];
+                    }
                 } else {
-                    $error = $config['msg']['login_wrongpass'];
+                    $error = $config['msg']['login_noaccount'];
                 }
-            } else {
-                $error = $config['msg']['login_noaccount'];
             }
         }
     }
@@ -102,6 +115,7 @@ if (isset($config['registration']['email_verification'])) {
                             <input type="password" name="password" id="password"
                                    class="form-control" required>
                         </div>
+						<?php turnstile_render(); ?>
                         <button type="submit" class="btn btn-primary w-100">
                             <i class="fas fa-sign-in-alt"></i> Login
                         </button>

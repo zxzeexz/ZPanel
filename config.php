@@ -5,7 +5,7 @@
  * Revision 1 [9-12-2025]
  * Zee ^_~
  */
-$siteUrl = 'http://47.129.100.170';					//Specify [protocol (http or https)]://[hostname]:[port] under where ZPanel runs.
+$siteUrl = 'http://1234';					//Specify [protocol (http or https)]://[hostname]:[port] under where ZPanel runs.
 return [
     // -----------------------------
     // Site Settings
@@ -28,7 +28,7 @@ return [
         'port'     => '3306',
         'name'     => 'c2ro_main',
         'user'     => 'root',
-        'pass'     => 'pass',
+        'pass'     => '1111',
         'charset'  => 'utf8mb4',
     ],
 
@@ -78,18 +78,28 @@ return [
     'mail' => [
         'host'       => 'smtp.gmail.com',
         'port'       => 587,
-        'username'   => 'user',
-        'password'   => 'pass',
-        'from_email' => 'email@gmail.com',
-        'from_name'  => 'ZPanel',
-        'reply_email'=> 'email@gmail.com',	//Fallback for replies (probably avoids the email being marked as spam)
-        'reply_name' => 'ZPanel',
-        'hostname'   => 'example.com',		//Must match your domain DNS
+        'username'   => 'projbaldur@gmail.com',
+        'password'   => 'naqsjpjvptwicmcm',
+        'from_email' => 'projbaldur@gmail.com',
+        'from_name'  => 'Project Baldur',
+        'reply_email'=> 'projbaldur@gmail.com',	//Fallback for replies (probably avoids the email being marked as spam)
+        'reply_name' => 'Project Baldur',
+        'hostname'   => 'projectbaldur.servegame.com',		//Must match your domain DNS
         'debug'      => 0,						//Toggle emailer debug 0=off, 2=verbose debug
 		//email subjects section
 		'verification_email' => 'YourRO - Activate your account',
 		'passwrdreset_email' => 'YourRO - Password Reset',
     ],
+	
+	// -----------------------------
+	// Turnstile Captcha Feature (To scare away bad people)
+	// -----------------------------
+	'turnstile' => [
+    'enabled'     => false,  // Set to true to enable on forms
+    'site_key'    => '',     // Your Cloudflare Turnstile site key (from dashboard)
+    'secret_key'  => '',     // Your Cloudflare Turnstile secret key (keep secure)
+	],
+	
 	// -----------------------------
 	// Unstuck Feature (Account and player dashboard)
 	// -----------------------------
@@ -112,6 +122,8 @@ return [
 	'msg' => [
 		//misc
 		'form_csrferror' => 'CSRF validation failed. Please reload the page and try again.',
+		'turnstile_invalid' => 'Captcha validation failed. Please try again.',
+		'turnstile_missing' => 'Captcha is required.',
 		//login module
 		//errors
 		'login_nullusrpw' => 'Please enter both username and password.',

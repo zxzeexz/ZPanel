@@ -25,18 +25,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // Sanitize & collect input
-    $username  = trim((string)($_POST['username'] ?? ''));
-    $email     = trim((string)($_POST['email'] ?? ''));
-    $password  = (string)($_POST['password'] ?? '');
-    $password2 = (string)($_POST['password2'] ?? '');
-    $sex       = strtoupper(trim((string)($_POST['sex'] ?? 'M')));
-    $birthdate = trim((string)($_POST['birthdate'] ?? ''));
-    $ip        = getUserIp();
-	$device_fingerprint = trim((string)($_POST['device_fingerprint'] ?? ''));
-
-    // Basic validation
     if (!$error) {
+        // Sanitize & collect input
+        $username  = trim((string)($_POST['username'] ?? ''));
+        $email     = trim((string)($_POST['email'] ?? ''));
+        $password  = (string)($_POST['password'] ?? '');
+        $password2 = (string)($_POST['password2'] ?? '');
+        $sex       = strtoupper(trim((string)($_POST['sex'] ?? 'M')));
+        $birthdate = trim((string)($_POST['birthdate'] ?? ''));
+        $ip        = getUserIp();
+        $device_fingerprint = trim((string)($_POST['device_fingerprint'] ?? ''));
+
+        // Basic validation
         if ($username === '' || $email === '' || $password === '' || $password2 === '' || $sex === '' || $birthdate === '') {
             $error = $config['msg']['regist_nullfld'];
         } elseif ($password !== $password2) {
@@ -52,9 +52,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
     }
-	
-	//Validate email domain
-	if (!$error) {
+
+    // Turnstile check (only if enabled)
+    if (!$error && ($config['turnstile']['enabled'] ?? false)) {
+        $turnstileToken = $_POST['cf-turnstile-response'] ?? '';
+        if (empty($turnstileToken)) {
+            $error = $config['msg']['turnstile_missing'];
+        } elseif (!turnstile_validate()) {
+            $error = $config['msg']['turnstile_invalid'];
+        }
+    }
+
+    // Validate email domain
+    if (!$error) {
         $domain = strtolower(substr(strrchr($email, "@"), 1));
         $allowedDomains = $config['registration']['allowed_email_domains'] ?? [];
         if (!empty($allowedDomains) && !in_array($domain, $allowedDomains)) {
@@ -87,8 +97,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 	
-	// Enforce max accounts per device (if configured)
-	if (!$error) {
+    // Enforce max accounts per device (if configured)
+    if (!$error) {
         $limit = (int)($config['registration']['max_accounts_per_device'] ?? 0);
         if ($limit > 0 && $device_fingerprint !== '') {  // Skip if fingerprint missing
             $row = db_fetch("SELECT COUNT(*) AS cnt FROM cp_accounts WHERE device_fingerprint = :fp", [':fp' => $device_fingerprint]);
@@ -135,7 +145,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ':reg_ip'          => $ip,
             ':verified'        => $verified,
             ':activation_code' => $activationCode,
-			':device_fingerprint' => $device_fingerprint,
+            ':device_fingerprint' => $device_fingerprint,
         ]);
 
         if ($ok) {
@@ -143,10 +153,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($requiresVerification) {
                 // Build activation link (direct to modules/register/verify.php)
                 $activationLink = rtrim($config['site']['url'], '/') 
-				. $config['site']['root_path']
-				. '/modules/register/verify.php'
-				. '?user=' . urlencode($username) 
-				. '&code=' . urlencode($activationCode);
+                . $config['site']['root_path']
+                . '/modules/register/verify.php'
+                . '?user=' . urlencode($username) 
+                . '&code=' . urlencode($activationCode);
 
                 // Build email body using template function
                 $subject = $config['mail']['verification_email'] ?? 'Activate your account';
@@ -161,15 +171,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $error = $config['msg']['regist_sucxeml'];
                 }
             } else {
-				// Directly verified → also insert into login table
-				$sqlLogin = "INSERT INTO `login` (userid, user_pass, sex, email, group_id, birthdate) VALUES (:userid, :user_pass, :sex, :email, 0, :birthdate)";
-				db_execute($sqlLogin, [
-					':userid'    => $username,
-					':user_pass' => $passwordHash,
-					':sex'       => $sex,
-					':email'     => $email,
-					':birthdate' => $birthdate,
-				]);
+                // Directly verified ? also insert into login table
+                $sqlLogin = "INSERT INTO `login` (userid, user_pass, sex, email, group_id, birthdate) VALUES (:userid, :user_pass, :sex, :email, 0, :birthdate)";
+                db_execute($sqlLogin, [
+                    ':userid'    => $username,
+                    ':user_pass' => $passwordHash,
+                    ':sex'       => $sex,
+                    ':email'     => $email,
+                    ':birthdate' => $birthdate,
+                ]);
                 $success = $config['msg']['regist_succes2'];
             }
         } else {
@@ -197,7 +207,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php if (!empty($config['security']['csrf_protection'])): ?>
         <?= csrf_field() ?>
     <?php endif; ?>
-			<input type="hidden" name="device_fingerprint" id="device_fingerprint" value="">
+            <input type="hidden" name="device_fingerprint" id="device_fingerprint" value="">
     <div class="row">
         <div class="col-md-6 mb-3">
             <label class="form-label">Username</label>
@@ -235,6 +245,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <input type="date" name="birthdate" class="form-control" required value="<?= e($_POST['birthdate'] ?? '') ?>">
         </div>
     </div>
+
+    <?php turnstile_render(); ?>
 
     <div class="d-grid mt-3">
         <button type="submit" class="btn btn-success">

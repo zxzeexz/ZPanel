@@ -69,7 +69,7 @@ function hashPassword(string $password, string $method = 'md5'): string {
     }
 }
 
-// Class Job names (only pre renewal for now)
+// Class Job names (Thank you Astral :3)
 function get_job_name($class_id) {
     $jobs = [
         0 => "Novice",
@@ -85,19 +85,19 @@ function get_job_name($class_id) {
         10 => "Blacksmith",
         11 => "Hunter",
         12 => "Assassin",
-        13 => "Crusader",
-        14 => "Monk",
-        15 => "Sage",
-        16 => "Rogue",
-        17 => "Alchemist",
-        18 => "Bard",
-        19 => "Dancer",
-        20 => "Super Novice",
-        21 => "Gunslinger",
-        22 => "Ninja",
-        23 => "Taekwon",
-        24 => "Star Gladiator",
-        25 => "Soul Linker",
+        14 => "Crusader",
+        15 => "Monk",
+        16 => "Sage",
+        17 => "Rogue",
+        18 => "Alchemist",
+        19 => "Bard",
+        20 => "Dancer",
+        23 => "Super Novice",
+        24 => "Gunslinger",
+        25 => "Ninja",
+		4046 => "Taekwon",
+        4047 => "Star Gladiator",
+        4049 => "Soul Linker",
         4001 => "High Novice",
         4002 => "High Swordman",
         4003 => "High Mage",
@@ -150,4 +150,81 @@ function get_job_name($class_id) {
     ];
     
     return $jobs[$class_id] ?? "Unknown (ID: $class_id)";
+}
+
+/**
+ * Renders the Cloudflare Turnstile widget in a form (client-side).
+ * Call this inside <form> where you want the captcha (e.g., before submit button).
+ * Automatically loads the script if enabled.
+ */
+function turnstile_render(): void
+{
+    global $config;
+    if (!($config['turnstile']['enabled'] ?? false)) {
+        return;
+    }
+
+    $siteKey = $config['turnstile']['site_key'] ?? '';
+    if (empty($siteKey)) {
+        return;  // No key — skip silently
+    }
+
+    // Load script (async/defer to not block)
+    echo '<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>';
+
+    // Render widget div (implicit mode — auto executes on load)
+    echo '<div class="cf-turnstile" data-sitekey="' . e($siteKey) . '"></div>';
+}
+
+/**
+ * Validates the Cloudflare Turnstile token on form submit (server-side).
+ * Call this at the top of POST handling in modules (e.g., login.php, pwreset.php).
+ * Returns true if valid, false if invalid or disabled.
+ * On false, set $error = $config['msg']['turnstile_invalid'] or similar.
+ */
+function turnstile_validate(): bool
+{
+    global $config;
+    if (!($config['turnstile']['enabled'] ?? false)) {
+        return true;  // Disabled — auto-pass
+    }
+
+    $secretKey = $config['turnstile']['secret_key'] ?? '';
+    if (empty($secretKey)) {
+        return false;  // No secret — fail
+    }
+
+    $token = $_POST['cf-turnstile-response'] ?? '';
+    if (empty($token)) {
+        // NEW: Specific check for missing token
+        // In your module, you can now check for this and use 'turnstile_missing' msg
+        return false;  // Missing token — fail
+    }
+
+    $remoteIp = $_SERVER['REMOTE_ADDR'] ?? '';  // Optional
+
+    // POST to validation endpoint
+    $url = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
+    $data = [
+        'secret'   => $secretKey,
+        'response' => $token,
+        'remoteip' => $remoteIp,
+    ];
+
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    if ($httpCode !== 200) {
+        return false;  // API error
+    }
+
+    $result = json_decode($response, true);
+    return ($result['success'] ?? false) === true;
 }
