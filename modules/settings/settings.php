@@ -21,9 +21,9 @@ $username  = Session::get('username');
 
 // Fetch account info from `login` table
 $account = db_fetch(
-    "SELECT userid AS username, email, sex, birthdate, user_pass
-     FROM login
-     WHERE userid = :u",
+    "SELECT username, email, sex, birthdate, password
+     FROM cp_accounts
+     WHERE username = :u",
     [':u' => $username]
 );
 
@@ -34,7 +34,7 @@ if (!$account) {
 $success = $error = "";
 
 // Handle password change
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['new_password'])) {
     if (!csrf_verify($_POST['csrf_token'] ?? '')) {
         $error = $config['msg']['form_csrferror'];
     } else {
@@ -48,39 +48,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
         } elseif (strlen($newPassword) < 6) {
             $error = $config['msg']['settng_inpulen'];
         } else {
-            $config = include __DIR__ . '/../../config.php';
-            $hashMethod = $config['security']['hash_method'] ?? 'md5';
+            $hashMethod = strtolower($config['security']['hash_method'] ?? 'md5');
 
-            $currentHash = ($hashMethod === 'md5')
-                ? md5($currentPassword)
-                : $currentPassword;
+            $dbPass = $account['user_pass'];
+            $isValid = false;
 
-            // Verify current password in `login`
-            if ($account['user_pass'] !== $currentHash) {
+            if ($hashMethod === 'bcrypt') {
+                $isValid = password_verify($currentPassword, $dbPass);
+            } elseif ($hashMethod === 'plain') {
+                $isValid = $currentPassword === $dbPass;
+            } elseif ($hashMethod === 'md5') {
+                $isValid = md5($currentPassword) === $dbPass;
+            }
+
+            if (!$isValid) {
                 $error = $config['msg']['settng_xcurpas'];
             } else {
-                $newHash = ($hashMethod === 'md5')
-                    ? md5($newPassword)
-                    : $newPassword;
+                // Hash new password
+                if ($hashMethod === 'bcrypt') {
+                    $newHash = password_hash($newPassword, PASSWORD_BCRYPT);
+                } elseif ($hashMethod === 'plain') {
+                    $newHash = $newPassword;
+                } elseif ($hashMethod === 'md5') {
+                    $newHash = md5($newPassword);
+                } else {
+                    $newHash = $newPassword; // fallback
+                }
 
                 // Update in `login`
-                db_execute(
-                    "UPDATE login SET user_pass = :pass WHERE userid = :u",
-                    [':pass' => $newHash, ':u' => $username]
-                );
+                $stmt1 = $GLOBALS['db']->prepare("UPDATE login SET user_pass = :pass WHERE userid = :u");
+                $ok1 = $stmt1->execute([':pass' => $newHash, ':u' => $username]);
+                $rows1 = $stmt1->rowCount();
 
                 // Update in `cp_accounts`
-                db_execute(
-                    "UPDATE cp_accounts SET password = :pass WHERE username = :u",
-                    [':pass' => $newHash, ':u' => $username]
-                );
+                $stmt2 = $GLOBALS['db']->prepare("UPDATE cp_accounts SET password = :pass WHERE username = :u");
+                $ok2 = $stmt2->execute([':pass' => $newHash, ':u' => $username]);
+                $rows2 = $stmt2->rowCount();
 
-                $success = $config['msg']['settng_success'];
+                if ($ok1 && $ok2 && ($rows1 > 0 || $rows2 > 0)) {
+                    $success = $config['msg']['settng_success'];
+                } else {
+                    $error = 'Failed to update password in database. Please try again or contact admin.';
+                }
             }
         }
     }
-}
-?>
+}?>
 
 <div class="container mt-5">
     <div class="row mb-4">
