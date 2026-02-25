@@ -18,7 +18,7 @@ return [
     // -----------------------------
     // Debug Mode
     // -----------------------------
-    'debug' => true,								//Toggle error reporting
+    'debug' => false,								//Toggle error reporting
 
     // -----------------------------
     // Database Settings - supports only MySQL/MariaDB.
@@ -106,7 +106,7 @@ return [
 	// Password Reset Options
 	// -----------------------------
 	'pwreset' => [
-		'enabled'    => true,    // Toggle feature on/off
+		'enabled'    => false,    // Toggle feature on/off
 		'expiry'     => 36000,    // Reset link expiry time (in seconds, e.g., 10 hours)
 	],
 	
@@ -114,7 +114,7 @@ return [
     // Email Change Options
     // -----------------------------
     'email_change' => [
-        'enabled' => true,    // Toggle feature on/off (default false)
+        'enabled' => false,    // Toggle feature on/off (default false)
         'expiry'  => 86400,     // Link expiry time (in seconds)
     ],
 

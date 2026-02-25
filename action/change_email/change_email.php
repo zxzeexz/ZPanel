@@ -74,7 +74,7 @@ if (!filter_var($new_email, FILTER_VALIDATE_EMAIL)) {
         );
 
         if ($ok) {
-            $verify_link = BASE_URL . 'settings/verify_email?user=' . urlencode($username) . '&token=' . urlencode($token);
+            $verify_link = BASE_URL . 'modules/everify/verify_emailch.php?user=' . urlencode($username) . '&token=' . urlencode($token);
 
             require_once __DIR__ . '/../../lib/email_templates.php';
             $body = getChangeEmailTemplate($username, $new_email, $verify_link, $config);

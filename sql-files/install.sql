@@ -31,10 +31,19 @@ CREATE TABLE IF NOT EXISTS `cp_accounts` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --cp_pwreset
-CREATE TABLE `cp_pwreset` (
+CREATE TABLE IF NOT EXISTS `cp_pwreset` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
-    `userid` VARCHAR(32) NOT NULL,
+    `userid` VARCHAR(23) NOT NULL,
     `token` VARCHAR(64) NOT NULL,
     `expires_at` INT NOT NULL,
     UNIQUE KEY (`userid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--cp_emailchange
+CREATE TABLE IF NOT EXISTS `cp_emailchange` (
+	`userid` varchar(23) NOT NULL,
+	`token` varchar(64) NOT NULL,
+	`new_email` varchar(255) NOT NULL,
+	`expires_at` int(11) NOT NULL,
+	PRIMARY KEY (`userid`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

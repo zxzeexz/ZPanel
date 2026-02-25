@@ -9,6 +9,10 @@ require_once __DIR__ . '/../../init.php';
 require_once __DIR__ . '/../../lib/mailer.php';
 require_once __DIR__ . '/../../lib/email_templates.php';
 
+if (Session::isLoggedIn()) {
+    redirect(BASE_URL . 'dashboard');
+}
+
 // Check if email verification is enabled in config
 if (empty($config['registration']['email_verification'])): ?>
     <div class="container mt-5">

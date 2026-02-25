@@ -154,7 +154,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Build activation link (direct to modules/register/verify.php)
                 $activationLink = rtrim($config['site']['url'], '/') 
                 . $config['site']['root_path']
-                . '/modules/register/verify.php'
+                . '/modules/everify/verify_register.php'
                 . '?user=' . urlencode($username) 
                 . '&code=' . urlencode($activationCode);
 

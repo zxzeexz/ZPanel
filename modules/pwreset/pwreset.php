@@ -9,6 +9,11 @@ require_once __DIR__ . '/../../init.php';
 require_once __DIR__ . '/../../lib/mailer.php';     // For sendMail(...)
 require_once __DIR__ . '/../../lib/email_templates.php'; // Extend for reset template
 
+if (Session::isLoggedIn()) {
+    redirect(BASE_URL . 'dashboard');
+}
+
+
 // Toggle check
 if (!($config['pwreset']['enabled'] ?? false)) {
     $error = $config['msg']['pwres_disable'];

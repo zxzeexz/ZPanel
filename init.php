@@ -5,6 +5,8 @@
  * Revision 1 [9-12-2025]
  * Zee ^_~
  */
+//fix redirects for non-login modules
+ob_start();
 
 // -----------------------------
 // Load Configuration
@@ -98,13 +100,7 @@ if (!empty($config['security']['csrf_protection']) && $config['security']['csrf_
     }
 }
 
-// -----------------------------
-// Redirect after login support
-// -----------------------------
-$rootPath = $config['site']['root_path'] ?? '';  // e.g., '/cpanel' or empty string
-$pattern = '#^' . preg_quote($rootPath, '#') . '/(login|register|resendve|pwreset|settings/verify_email)(\?.*)?$#';
-
-if (!Session::isLoggedIn() && !preg_match($pattern, $_SERVER['REQUEST_URI'])) {
-    // Save intended destination (but skip login, register, pwreset and resendve pages)
+if (!Session::isLoggedIn() && !preg_match('#/(login|register|resendve|pwreset|everify)#', $_SERVER['REQUEST_URI'])) {
+    // Save intended destination (but skip login, register, pwreset, resendve, and everify pages)
     $_SESSION['redirect_after_login'] = $_SERVER['REQUEST_URI'];
 }
