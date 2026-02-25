@@ -9,9 +9,8 @@ require_once __DIR__ . '/../../init.php';
 require_once __DIR__ . '/../../functions.php';
 
 // Ensure logged in
-// In dashboard.php (and charview, settings, etc.)
 if (!Session::isLoggedIn()) {
-    Session::cleanupExpired();  // Run cleanup here — after validation set $last_error
+    Session::cleanupExpired();
     $lastError = Session::getLastError();
     $redirect = BASE_URL . 'login?logout=2';
     $_SESSION['intended_url'] = $_SERVER['REQUEST_URI'] ?? (BASE_URL . 'dashboard');

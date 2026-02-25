@@ -2,9 +2,9 @@
 // action/unstuck/unstuck.php - Centralized unstuck handler
 require_once __DIR__ . '/../../init.php';  // Loads DB, config, session, etc.
 
-// Only allow logged-in users
+// Ensure logged in
 if (!Session::isLoggedIn()) {
-    Session::cleanupExpired();  // Run cleanup here — after validation set $last_error
+    Session::cleanupExpired();
     $lastError = Session::getLastError();
     $redirect = BASE_URL . 'login?logout=2';
     $_SESSION['intended_url'] = $_SERVER['REQUEST_URI'] ?? (BASE_URL . 'dashboard');

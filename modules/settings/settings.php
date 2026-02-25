@@ -9,7 +9,7 @@ require_once __DIR__ . '/../../init.php';
 
 // Ensure logged in
 if (!Session::isLoggedIn()) {
-    Session::cleanupExpired();  // Run cleanup here — after validation set $last_error
+    Session::cleanupExpired();
     $lastError = Session::getLastError();
     $redirect = BASE_URL . 'login?logout=2';
     $_SESSION['intended_url'] = $_SERVER['REQUEST_URI'] ?? (BASE_URL . 'dashboard');
@@ -67,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['new_password'])) {
         } else {
             $hashMethod = strtolower($config['security']['hash_method'] ?? 'md5');
 
-            $dbPass = $account['user_pass'];
+            $dbPass = $account['password'];
             $isValid = false;
 
             if ($hashMethod === 'bcrypt') {
@@ -93,16 +93,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['new_password'])) {
                 }
 
                 // Update in `login`
-                $stmt1 = $GLOBALS['db']->prepare("UPDATE login SET user_pass = :pass WHERE userid = :u");
-                $ok1 = $stmt1->execute([':pass' => $newHash, ':u' => $username]);
-                $rows1 = $stmt1->rowCount();
+                $ok1 = db_execute("UPDATE login SET user_pass = :pass WHERE userid = :u", [':pass' => $newHash, ':u' => $username]);
 
                 // Update in `cp_accounts`
-                $stmt2 = $GLOBALS['db']->prepare("UPDATE cp_accounts SET password = :pass WHERE username = :u");
-                $ok2 = $stmt2->execute([':pass' => $newHash, ':u' => $username]);
-                $rows2 = $stmt2->rowCount();
+                $ok2 = db_execute("UPDATE cp_accounts SET password = :pass WHERE username = :u", [':pass' => $newHash, ':u' => $username]);
 
-                if ($ok1 && $ok2 && ($rows1 > 0 || $rows2 > 0)) {
+                if ($ok1 && $ok2) {
                     $success = $config['msg']['settng_success'];
                 } else {
                     $error = 'Failed to update password in database. Please try again or contact admin.';

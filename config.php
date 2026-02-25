@@ -5,7 +5,7 @@
  * Revision 1 [9-12-2025]
  * Zee ^_~
  */
-$siteUrl = 'http://47.129.100.170';					//Specify [protocol (http or https)]://[hostname]:[port] under where ZPanel runs.
+$siteUrl = 'http://127.0.0.1';					//Specify [protocol (http or https)]://[hostname]:[port] under where ZPanel runs.
 return [
     // -----------------------------
     // Site Settings
@@ -18,7 +18,7 @@ return [
     // -----------------------------
     // Debug Mode
     // -----------------------------
-    'debug' => false,								//Toggle error reporting
+    'debug' => true,								//Toggle error reporting
 
     // -----------------------------
     // Database Settings - supports only MySQL/MariaDB.
@@ -76,7 +76,7 @@ return [
     // Email / PHPMailer Settings - Only if you enable email_verification
     // -----------------------------
     'mail' => [
-        'host'       => 'smtp.gmail.com',
+        'host'       => 'smtp.example.com',
         'port'       => 587,
         'username'   => 'user',
         'password'   => 'pass',
