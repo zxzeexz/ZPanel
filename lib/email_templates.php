@@ -157,3 +157,49 @@ function getResetEmailTemplate(string $username, string $resetLink, array $confi
 </html>
 HTML;
 }
+
+/**
+ * Template 3 (email change verification email)
+ * @param string $username        The username
+ * @param string $new_email       The new email
+ * @param string $verifyLink      The verification URL
+ * @param array  $config          Global config
+ * @return string HTML email body
+ */
+function getChangeEmailTemplate(string $username, string $new_email, string $verifyLink, array $config): string
+{
+    $siteName = $config['site']['name'] ?? 'ZPanel';
+    $siteUrl  = $config['site']['url'] ?? 'http://localhost/';
+    $expiryHours = round(($config['email_change']['expiry'] ?? 3600) / 3600);
+
+    return <<<HTML
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Email Change Verification - {$siteName}</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #121212; color: #f0f0f0; padding: 20px; }
+        .container { background-color: #1e1e1e; border-radius: 8px; padding: 20px; max-width: 600px; margin: auto; color: #bbbbbb; }
+        h2 { color: #4caf50; }
+        a.button { display: inline-block; background-color: #4caf50; color: #ffffff !important; padding: 10px 20px; border-radius: 4px; text-decoration: none; font-weight: bold; }
+        a.button:hover { background-color: #43a047; }
+        .footer { font-size: 12px; margin-top: 20px; color: #bbbbbb; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Hello {$username},</h2>
+        <p>You requested to change your email to {$new_email}.</p>
+        <p>Click the button below to verify. This link expires in {$expiryHours} hours.</p>
+        <p style="text-align: center;"><a href="{$verifyLink}" class="button">Verify Email Change</a></p>
+        <p>If the button doesn't work: <a href="{$verifyLink}" style="color: #4caf50;">{$verifyLink}</a></p>
+        <div class="footer">
+            <p>Sent by {$siteName}. Ignore if not requested.</p>
+            <p><a href="{$siteUrl}" style="color: #4caf50;">Visit {$siteName}</a></p>
+        </div>
+    </div>
+</body>
+</html>
+HTML;
+}

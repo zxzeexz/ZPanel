@@ -15,7 +15,7 @@ if (Session::isLoggedIn()) {
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // CSRF check first (always required if enabled)
+    // CSRF: use procedural helper loaded by init.php
     $token = $_POST['csrf_token'] ?? '';
     if (!csrf_verify($token)) {
         $error = $config['msg']['form_csrferror'];
@@ -27,17 +27,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = $config['msg']['login_nullusrpw'];
         } else {
             // Turnstile check (only if enabled)
+            $turnstileOk = true;
             if ($config['turnstile']['enabled'] ?? false) {
                 $turnstileToken = $_POST['cf-turnstile-response'] ?? '';
                 if (empty($turnstileToken)) {
                     $error = $config['msg']['turnstile_missing'];
+                    $turnstileOk = false;
                 } elseif (!turnstile_validate()) {
                     $error = $config['msg']['turnstile_invalid'];
+                    $turnstileOk = false;
                 }
             }
 
-            // If no error so far, proceed to auth
-            if (!isset($error)) {
+            if ($turnstileOk) {
                 // Fetch account from `login` table
                 $sql = "SELECT account_id, userid, user_pass FROM `login` WHERE userid = :u LIMIT 1";
                 $row = db_fetch($sql, [':u' => $username]);

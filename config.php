@@ -5,7 +5,7 @@
  * Revision 1 [9-12-2025]
  * Zee ^_~
  */
-$siteUrl = 'http://1234';					//Specify [protocol (http or https)]://[hostname]:[port] under where ZPanel runs.
+$siteUrl = 'http://47.129.100.170';					//Specify [protocol (http or https)]://[hostname]:[port] under where ZPanel runs.
 return [
     // -----------------------------
     // Site Settings
@@ -27,8 +27,8 @@ return [
         'host'     => 'localhost',
         'port'     => '3306',
         'name'     => 'c2ro_main',
-        'user'     => 'root',
-        'pass'     => '1111',
+        'user'     => 'user',
+        'pass'     => 'pass',
         'charset'  => 'utf8mb4',
     ],
 
@@ -78,27 +78,19 @@ return [
     'mail' => [
         'host'       => 'smtp.gmail.com',
         'port'       => 587,
-        'username'   => 'projbaldur@gmail.com',
-        'password'   => 'naqsjpjvptwicmcm',
-        'from_email' => 'projbaldur@gmail.com',
+        'username'   => 'user',
+        'password'   => 'pass',
+        'from_email' => 'email@gmail.com',
         'from_name'  => 'Project Baldur',
-        'reply_email'=> 'projbaldur@gmail.com',	//Fallback for replies (probably avoids the email being marked as spam)
+        'reply_email'=> 'email@gmail.com',	//Fallback for replies (probably avoids the email being marked as spam)
         'reply_name' => 'Project Baldur',
-        'hostname'   => 'projectbaldur.servegame.com',		//Must match your domain DNS
+        'hostname'   => 'example.com',		//Must match your domain DNS
         'debug'      => 0,						//Toggle emailer debug 0=off, 2=verbose debug
 		//email subjects section
 		'verification_email' => 'YourRO - Activate your account',
 		'passwrdreset_email' => 'YourRO - Password Reset',
+		'account_change_email' => 'YourRO - Verify Email Change',
     ],
-	
-	// -----------------------------
-	// Turnstile Captcha Feature (To scare away bad people)
-	// -----------------------------
-	'turnstile' => [
-    'enabled'     => false,  // Set to true to enable on forms
-    'site_key'    => '',     // Your Cloudflare Turnstile site key (from dashboard)
-    'secret_key'  => '',     // Your Cloudflare Turnstile secret key (keep secure)
-	],
 	
 	// -----------------------------
 	// Unstuck Feature (Account and player dashboard)
@@ -117,13 +109,19 @@ return [
 		'enabled'    => true,    // Toggle feature on/off
 		'expiry'     => 36000,    // Reset link expiry time (in seconds, e.g., 10 hours)
 	],
+	
+	// -----------------------------
+    // Email Change Options
+    // -----------------------------
+    'email_change' => [
+        'enabled' => true,    // Toggle feature on/off (default false)
+        'expiry'  => 86400,     // Link expiry time (in seconds)
+    ],
 
 	//messages
 	'msg' => [
 		//misc
 		'form_csrferror' => 'CSRF validation failed. Please reload the page and try again.',
-		'turnstile_invalid' => 'Captcha validation failed. Please try again.',
-		'turnstile_missing' => 'Captcha is required.',
 		//login module
 		//errors
 		'login_nullusrpw' => 'Please enter both username and password.',
@@ -190,7 +188,19 @@ return [
 		// confirmations
 		'pwres_reqsent' => 'Password reset link sent to your email. Please make sure to check your spam/junk mail.',
 		'pwres_success' => 'Password reset successfully. You can now log in.',
-	
+		//settings module
+		//email change feature
+        //errors
+        'settng_email_invalid' => 'Invalid email address.', 
+        'settng_email_same' => 'New email must be different from current.', 
+        'settng_email_exists' => 'This email is already in use.', 
+        'settng_email_db_error' => 'Failed to process email change request. Try again later.', 
+        'settng_email_disabled' => 'Email change feature is disabled.', 
+        'settng_email_badlink' => 'Invalid or expired email change link.', 
+        //confirmations
+        'settng_email_sent' => 'A verification email has been sent to your new email address. Please check your inbox and spam/junk folder.', 
+        'settng_email_changed' => 'Your email has been changed successfully!',
+		
 		//actions
 		//unstuck
 		'action_unotfnd' => 'Character not found.',

@@ -16,6 +16,11 @@ if (!Session::isLoggedIn()) {
     redirect($redirect);
 }
 
+// Handle confirmations from session (e.g., from email change redirect)
+$flash_success = isset($_SESSION['success']) ? $_SESSION['success'] : '';
+$flash_error = isset($_SESSION['error']) ? $_SESSION['error'] : '';
+unset($_SESSION['success'], $_SESSION['error']);
+
 $accountId = Session::getAccountId();
 $username  = Session::get('username');
 
@@ -109,6 +114,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['new_password'])) {
         </div>
     </div>
 
+    <?php if ($flash_success): ?>
+        <div class="alert alert-success"><?= e($flash_success) ?></div>
+    <?php endif; ?>
+    <?php if ($flash_error): ?>
+        <div class="alert alert-danger"><?= e($flash_error) ?></div>
+    <?php endif; ?>
     <?php if ($success): ?>
         <div class="alert alert-success"><?= e($success) ?></div>
     <?php endif; ?>
@@ -122,7 +133,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['new_password'])) {
         </div>
         <div class="card-body">
             <p><strong>Username:</strong> <?= e($account['username']) ?></p>
-            <p><strong>Email:</strong> <?= e($account['email']) ?></p>
+            <p><strong>Email:</strong> <?= e($account['email']) ?>
+                <?php if ($config['email_change']['enabled']): ?>
+                    <button type="button" class="btn btn-primary btn-sm ms-2" data-bs-toggle="modal" data-bs-target="#changeEmailModal">
+                        <i class="fas fa-envelope"></i> Change Email
+                    </button>
+                <?php endif; ?>
+            </p>
             <p><strong>Sex:</strong> <?= e($account['sex']) ?></p>
             <p><strong>Birthdate:</strong> <?= e($account['birthdate']) ?></p>
         </div>
@@ -151,6 +168,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['new_password'])) {
                     <i class="fas fa-save"></i> Update Password
                 </button>
             </form>
+        </div>
+    </div>
+
+    <!-- Change Email Modal -->
+    <div class="modal fade" id="changeEmailModal" tabindex="-1" aria-labelledby="changeEmailModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="changeEmailModalLabel"><i class="fas fa-envelope"></i> Change Email</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" action="<?php echo BASE_URL; ?>action/change_email/change_email.php">
+                        <?= csrf_field() ?>
+                        <div class="mb-3">
+                            <label for="new_email" class="form-label">New Email Address</label>
+                            <input type="email" class="form-control" id="new_email" name="new_email" required>
+                        </div>
+                        <p class="text-warning"><i class="fas fa-exclamation-triangle"></i> An email verification will be required to complete the change. Please check your new inbox and spam/junk folder.</p>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> Submit
+                        </button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </div>
