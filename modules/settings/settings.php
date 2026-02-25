@@ -17,9 +17,21 @@ if (!Session::isLoggedIn()) {
 }
 
 // Handle confirmations from session (e.g., from email change redirect)
-$flash_success = isset($_SESSION['success']) ? $_SESSION['success'] : '';
-$flash_error = isset($_SESSION['error']) ? $_SESSION['error'] : '';
-unset($_SESSION['success'], $_SESSION['error']);
+$flash_type = '';
+$flash_msg = '';
+if (isset($_SESSION['flash'])) {
+    $flash_type = $_SESSION['flash']['type'];
+    $flash_msg = $_SESSION['flash']['msg'];
+    unset($_SESSION['flash']);
+}
+if (isset($_SESSION['success'])) {
+    $success = $_SESSION['success'];
+    unset($_SESSION['success']);
+}
+if (isset($_SESSION['error'])) {
+    $error = $_SESSION['error'];
+    unset($_SESSION['error']);
+}
 
 $accountId = Session::getAccountId();
 $username  = Session::get('username');
@@ -114,17 +126,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['new_password'])) {
         </div>
     </div>
 
-    <?php if ($flash_success): ?>
-        <div class="alert alert-success"><?= e($flash_success) ?></div>
-    <?php endif; ?>
-    <?php if ($flash_error): ?>
-        <div class="alert alert-danger"><?= e($flash_error) ?></div>
-    <?php endif; ?>
     <?php if ($success): ?>
         <div class="alert alert-success"><?= e($success) ?></div>
     <?php endif; ?>
     <?php if ($error): ?>
         <div class="alert alert-danger"><?= e($error) ?></div>
+    <?php endif; ?>
+    <?php if ($flash_type && $flash_msg): ?>
+        <div class="alert alert-<?= e($flash_type) ?>"><?= e($flash_msg) ?></div>
     <?php endif; ?>
 
     <div class="card shadow border-0 mb-4">
@@ -182,6 +191,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['new_password'])) {
                 <div class="modal-body">
                     <form method="POST" action="<?php echo BASE_URL; ?>action/change_email/change_email.php">
                         <?= csrf_field() ?>
+                        <input type="hidden" name="redirect" value="<?= BASE_URL ?>settings">
                         <div class="mb-3">
                             <label for="new_email" class="form-label">New Email Address</label>
                             <input type="email" class="form-control" id="new_email" name="new_email" required>

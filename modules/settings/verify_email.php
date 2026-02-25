@@ -1,7 +1,9 @@
 <?php
 /**
  * modules/settings/verify_email.php
- * Email change verification
+ * Email change verification (no login required)
+ * Revision 1 [9-12-2025]
+ * Zee ^_~
  */
 require_once __DIR__ . '/../../init.php';
 
@@ -39,11 +41,11 @@ if ($token && $user) {
                     <?php if ($status === 'success'): ?>
                         <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
                         <h3>Email Changed</h3>
-                        <p><?= htmlspecialchars($message) ?></p>
+                        <p><?= e($message) ?></p>
                     <?php else: ?>
                         <i class="fas fa-times-circle fa-3x text-danger mb-3"></i>
                         <h3>Verification Failed</h3>
-                        <p><?= htmlspecialchars($message) ?></p>
+                        <p><?= e($message) ?></p>
                     <?php endif; ?>
                 </div>
             </div>

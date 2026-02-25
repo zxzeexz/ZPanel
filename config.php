@@ -26,7 +26,7 @@ return [
     'db' => [
         'host'     => 'localhost',
         'port'     => '3306',
-        'name'     => 'c2ro_main',
+        'name'     => 'ragnarok',
         'user'     => 'user',
         'pass'     => 'pass',
         'charset'  => 'utf8mb4',
@@ -80,10 +80,10 @@ return [
         'port'       => 587,
         'username'   => 'user',
         'password'   => 'pass',
-        'from_email' => 'email@gmail.com',
-        'from_name'  => 'Project Baldur',
-        'reply_email'=> 'email@gmail.com',	//Fallback for replies (probably avoids the email being marked as spam)
-        'reply_name' => 'Project Baldur',
+        'from_email' => 'email@example.com',
+        'from_name'  => 'YourRO',
+        'reply_email'=> 'email@example.com',	//Fallback for replies (probably avoids the email being marked as spam)
+        'reply_name' => 'YourRO',
         'hostname'   => 'example.com',		//Must match your domain DNS
         'debug'      => 0,						//Toggle emailer debug 0=off, 2=verbose debug
 		//email subjects section
